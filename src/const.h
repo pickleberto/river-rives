@@ -7,3 +7,6 @@
 
 #define CENTER_X (SCREEN_WIDTH / 2)
 #define CENTER_Y (SCREEN_HEIGHT / 2)
+
+#define TILE_SIZE 16
+#define HALF_TILE (TILE_SIZE / 2)

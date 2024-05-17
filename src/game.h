@@ -1,13 +1,15 @@
 #pragma once
 
 #include <riv.h>
+#include "player.h"
 
 typedef struct game
 {
     bool started;
+    Player* player;
 } Game;
 
 
-void init_game(Game* g);
-void update_game();
-void draw_game();
+void init_game(Game* g, Player* p);
+void update_game(Game* g);
+void draw_game(Game* g);

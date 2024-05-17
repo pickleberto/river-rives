@@ -2,8 +2,8 @@
 #include "const.h"
 #include "game.h"
 
-
 Game g;
+Player p;
 
 void init_riv()
 {
@@ -17,7 +17,7 @@ void update()
 {
     if(g.started)
     {
-        update_game();
+        update_game(&g);
     }
     else
     {
@@ -53,7 +53,7 @@ void draw()
 
     if(g.started)
     {
-        draw_game();
+        draw_game(&g);
     }
     else
     {
@@ -64,7 +64,7 @@ void draw()
 int main() 
 {
     init_riv();
-    init_game(&g);
+    init_game(&g, &p);
 
     do 
     {
