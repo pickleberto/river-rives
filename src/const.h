@@ -10,3 +10,5 @@
 
 #define TILE_SIZE 16
 #define HALF_TILE (TILE_SIZE / 2)
+
+#define GAME_SPRITESHEET 1

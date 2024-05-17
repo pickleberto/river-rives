@@ -12,9 +12,11 @@ OBJS := $(patsubst src/%.c,$(OBJDIR)/%.o,$(wildcard src/*.c))
 play: $(cartridge)
 	rivemu -sdk $(cartridge)
 
-$(cartridge): $(OBJS)
+$(game): $(OBJS)
 	$(rivemuexec) 'gcc -o $(game) $(OBJS) $$(riv-opt-flags -Ospeed)'
 	$(rivemuexec) riv-strip $(game)
+
+$(cartridge): $(game) $(SPRITES)
 	$(rivemuexec) riv-mksqfs $(game) $(SPRITES) $(cartridge) -comp xz
 
 $(OBJDIR)/%.o : src/%.c

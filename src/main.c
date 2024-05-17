@@ -11,6 +11,9 @@ void init_riv()
     riv->width = SCREEN_WIDTH;
     riv->height = SCREEN_HEIGHT;
     riv->target_fps = TARGET_FPS;
+
+    // Load sprites
+    riv_make_spritesheet(riv_make_image("rivesraid.png", 0), TILE_SIZE, TILE_SIZE);
 }
 
 void update()
