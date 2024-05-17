@@ -4,6 +4,7 @@
 
 Game g;
 Player p;
+Level l;
 
 void init_riv()
 {
@@ -67,7 +68,7 @@ void draw()
 int main() 
 {
     init_riv();
-    init_game(&g, &p);
+    init_game(&g, &p, &l);
 
     do 
     {
