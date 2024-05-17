@@ -1,5 +1,6 @@
 #include "player.h"
 #include "const.h"
+#include "sounds.h"
 
 #define SCALE_X 1
 #define SCALE_Y 1
@@ -54,5 +55,5 @@ void draw_player(Player* p)
 void kill_player(Player* p)
 {
     p->isDead = true;
-    
+    sfx_explosion();
 }
