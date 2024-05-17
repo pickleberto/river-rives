@@ -1,8 +1,9 @@
 #include <riv.h>
+#include "const.h"
+#include "game.h"
 
-#define SCREEN_WIDTH 256
-#define SCREEN_HEIGHT 256
-#define TARGET_FPS 60
+
+Game g;
 
 void init_riv()
 {
@@ -12,21 +13,64 @@ void init_riv()
     riv->target_fps = TARGET_FPS;
 }
 
+void update()
+{
+    if(g.started)
+    {
+        update_game();
+    }
+    else
+    {
+        if (riv->key_toggle_count > 0) 
+        {
+            g.started = true;
+        }
+    }
+}
+
+void draw_title_screen()
+{
+    // Draw title
+    riv_draw_text(
+        "rives raid",             // text to draw
+        RIV_SPRITESHEET_FONT_5X7, // sprite sheet id of the font
+        RIV_CENTER,               // anchor point on the text bounding box
+        CENTER_X,                 // anchor x
+        CENTER_Y,                 // anchor y
+        2,                        // text size multiplier
+        RIV_COLOR_LIGHTBLUE       // text color
+    );
+
+    int blink = TARGET_FPS / 5;
+    uint32_t color = (riv->frame % blink < (blink/2)) ? RIV_COLOR_LIGHTBLUE : RIV_COLOR_DARKGREEN;
+    // Draw press to start
+    riv_draw_text("PRESS TO START", RIV_SPRITESHEET_FONT_5X7, RIV_CENTER, CENTER_X, CENTER_Y + 16, 1, color);
+}
+
+void draw()
+{
+    riv_clear(RIV_COLOR_DARKSLATE);
+
+    if(g.started)
+    {
+        draw_game();
+    }
+    else
+    {
+        draw_title_screen();
+    }
+}
+
 int main() 
 {
     init_riv();
+    init_game(&g);
 
-    do {
-        // Draw title
-        riv_draw_text(
-            "rives raid",             // text to draw
-            RIV_SPRITESHEET_FONT_5X7, // sprite sheet id of the font
-            RIV_CENTER,               // anchor point on the text bounding box
-            SCREEN_WIDTH/2,           // anchor x
-            SCREEN_HEIGHT/2,          // anchor y
-            2,                        // text size multiplier
-            RIV_COLOR_LIGHTBLUE       // text color
-        );
+    do 
+    {
+        update();
+        draw();
     } while(riv_present());
+
     return 0;
 }
