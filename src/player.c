@@ -10,13 +10,19 @@
 void init_player(Player* p)
 {
     p->isDead = false;
-    p->pos = (riv_vec2f) { .x = CENTER_X - HALF_TILE, .y = SCREEN_HEIGHT - TILE_SIZE - HALF_TILE };
+    p->rect = (riv_rectf) { 
+        .x = CENTER_X - HALF_TILE, 
+        .y = SCREEN_HEIGHT - TILE_SIZE - HALF_TILE,
+        .width = TILE_SIZE, .height = TILE_SIZE, 
+    };
     p->sprite_id = 0;
     p->flip_x = 1;
 }
 
 void update_player(Player* p)
 {
+    if(p->isDead) return;
+
     int horizontal = 0;
     p->sprite_id = 0;
     p->flip_x = 1;
@@ -30,10 +36,23 @@ void update_player(Player* p)
         p->sprite_id = 1;
     }
     
-    p->pos.x += BASE_SPEED * horizontal;
+    p->rect.x += BASE_SPEED * horizontal;
 }
 
 void draw_player(Player* p)
 {
-    riv_draw_sprite(p->sprite_id, GAME_SPRITESHEET, p->pos.x, p->pos.y, 1, 1, SCALE_X * p->flip_x, SCALE_Y);
+    if(p->isDead)
+    {
+        riv_draw_rect_fill(p->rect.x, p->rect.y, TILE_SIZE, TILE_SIZE, RIV_COLOR_RED);
+    }
+    else
+    {
+        riv_draw_sprite(p->sprite_id, GAME_SPRITESHEET, p->rect.x, p->rect.y, 1, 1, SCALE_X * p->flip_x, SCALE_Y);
+    }
+}
+
+void kill_player(Player* p)
+{
+    p->isDead = true;
+    
 }

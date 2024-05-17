@@ -1,7 +1,5 @@
 #include "level.h"
 
-#include <riv.h>
-
 // invert here for better visualization
 int full_level_map[SCREEN_TILES_Y][SCREEN_TILES_X] = 
 {
@@ -69,4 +67,20 @@ void draw_level(Level* l)
     }
 }
 
+bool tile_collision(float x, float y, Level l)
+{
+    int tile_x = x / SCREEN_TILES_X;
+    int tile_y = y / SCREEN_TILES_Y;
+    return l.screen_tiles[tile_x][tile_y] == BORDER;
+}
+
+bool border_collision(riv_rectf object, Level l)
+{
+    bool edge1 = tile_collision(object.x,                   object.y,                   l);
+    bool edge2 = tile_collision(object.x + object.width,    object.y,                   l);
+    bool edge3 = tile_collision(object.x,                   object.y + object.height,   l);
+    bool edge4 = tile_collision(object.x + object.width,    object.y + object.height,   l);
+    
+    return edge1 || edge2 || edge3 || edge4;
+}
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <riv.h>
 #include "const.h"
 
 #define SCREEN_TILES_X (SCREEN_WIDTH / TILE_SIZE)
@@ -13,6 +14,8 @@ typedef struct level
 void init_level(Level* l);
 void update_level(Level* l);
 void draw_level(Level* l);
+bool border_collision(riv_rectf object, Level l);
+
 
 enum tiles
 {
