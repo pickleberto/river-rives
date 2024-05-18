@@ -38,6 +38,11 @@ void update_player(Player* p)
     }
     
     p->rect.x += BASE_SPEED * horizontal;
+
+    if(horizontal != 0)
+    {
+        sfx_move();
+    }
 }
 
 void draw_player(Player* p)
