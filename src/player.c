@@ -22,8 +22,16 @@ void init_player(Player* p)
     };
     p->sprite_id = 0;
     p->flip_x = 1;
+    p->isFinalScreen = false;
 
     init_bulletPool(&bullets);
+}
+
+void update_vertical(Player* p, Level* l)
+{
+    if(!p->isFinalScreen) return;
+    
+    p->rect.y -= l->screen_speed;
 }
 
 void update_horizontal(Player* p)
@@ -56,7 +64,7 @@ void update_fire(Player* p, Level* l)
         Bullet* b = get_bullet(&bullets);
         if(b != NULL_POINTER)
         {
-            init_bullet(b, p->rect.x, p->rect.y);
+            init_bullet(b, p->rect.x + (p->rect.width / 2), p->rect.y);
             sfx_shoot();
             last_shoot = riv->frame;
         }
@@ -70,7 +78,8 @@ void update_player(Player* p, Level* l)
     if(p->isDead) return;
     
     update_horizontal(p);
-    update_fire(p, l);    
+    update_fire(p, l);
+    update_vertical(p, l);   
 }
 
 void draw_player(Player* p)

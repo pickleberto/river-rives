@@ -7,6 +7,7 @@ typedef struct player
 {
     riv_rectf rect;
     bool isDead;
+    bool isFinalScreen;
 
     int sprite_id;
     int flip_x;

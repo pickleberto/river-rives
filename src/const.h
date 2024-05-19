@@ -11,6 +11,9 @@
 #define TILE_SIZE 16
 #define HALF_TILE (TILE_SIZE / 2)
 
+#define SCREEN_TILES_X (SCREEN_WIDTH / TILE_SIZE)
+#define SCREEN_TILES_Y (SCREEN_HEIGHT / TILE_SIZE)
+
 #define GAME_SPRITESHEET 1
 
 #define NULL_POINTER ( (void *) 0)

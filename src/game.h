@@ -7,6 +7,7 @@
 typedef struct game
 {
     bool started;
+    bool game_over;
     Player* player;
     Level* level;
 } Game;
