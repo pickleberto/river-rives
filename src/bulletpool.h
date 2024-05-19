@@ -11,6 +11,6 @@ typedef struct bulletPool
 } BulletPool;
 
 void init_bulletPool(BulletPool* bp);
-void update_bulletPool(BulletPool* bp, Level* l);
+void update_bulletPool(BulletPool* bp, Level* l, Score* s);
 void draw_bulletPool(BulletPool* bp);
 Bullet* get_bullet(BulletPool* bp);

@@ -1,6 +1,8 @@
 #include "game.h"
 #include "const.h"
 
+Score s;
+
 void init_game(Game* g, Player* p, Level* l)
 {
     g->started = false;
@@ -8,7 +10,7 @@ void init_game(Game* g, Player* p, Level* l)
     g->level = l;
     g->game_over = false;
 
-    init_player(g->player);
+    init_player(g->player, &s);
     init_level(g->level);
 }
 
@@ -19,7 +21,7 @@ void update_game(Game* g)
     update_level(g->level);
     update_player(g->player, g->level);
 
-    if(tile_collision(g->player->rect, *g->level))
+    if(tile_collision(g->player->rect, *g->level, g->player->score))
     {
         kill_player(g->player);
         

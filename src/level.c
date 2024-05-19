@@ -67,7 +67,7 @@ void draw_level(Level* l)
     }
 }
 
-bool screen_tile_collision(float x, float y, Level l)
+bool screen_tile_collision(float x, float y, Level l, Score* s)
 {
     int tile_x = x / SCREEN_TILES_X;
     int tile_y = ((y - l.map_offset) / SCREEN_TILES_Y) + l.min_y + 1;
@@ -76,18 +76,19 @@ bool screen_tile_collision(float x, float y, Level l)
     if(full_level_map[tile_y][tile_x] >= OBSTACLE)
     {
         full_level_map[tile_y][tile_x] = RIVER; //if destructable, then destroy it
+        add_obstacle(s);
         return true;
     }
 
     return full_level_map[tile_y][tile_x] >= BORDER;
 }
 
-bool tile_collision(riv_rectf object, Level l)
+bool tile_collision(riv_rectf object, Level l, Score* s)
 {
-    bool edge1 = screen_tile_collision(object.x,                   object.y,                   l);
-    bool edge2 = screen_tile_collision(object.x + object.width,    object.y,                   l);
-    bool edge3 = screen_tile_collision(object.x,                   object.y + object.height,   l);
-    bool edge4 = screen_tile_collision(object.x + object.width,    object.y + object.height,   l);
+    bool edge1 = screen_tile_collision(object.x,                   object.y,                   l,   s);
+    bool edge2 = screen_tile_collision(object.x + object.width,    object.y,                   l,   s);
+    bool edge3 = screen_tile_collision(object.x,                   object.y + object.height,   l,   s);
+    bool edge4 = screen_tile_collision(object.x + object.width,    object.y + object.height,   l,   s);
     
     return edge1 || edge2 || edge3 || edge4;
 }

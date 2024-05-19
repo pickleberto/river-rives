@@ -2,6 +2,7 @@
 
 #include <riv.h>
 #include "level.h"
+#include "score.h"
 
 typedef struct player
 {
@@ -11,9 +12,11 @@ typedef struct player
 
     int sprite_id;
     int flip_x;
+
+    Score* score;
 } Player;
 
-void init_player(Player* p);
+void init_player(Player* p, Score* s);
 void update_player(Player* p, Level* l);
 void draw_player(Player* p);
 

@@ -10,11 +10,11 @@ void init_bulletPool(BulletPool* bp)
     }
 }
 
-void update_bulletPool(BulletPool* bp, Level* l)
+void update_bulletPool(BulletPool* bp, Level* l, Score* s)
 {
     for(int i = 0; i < BULLET_POOL_SIZE; i++)
     {
-        update_bullet(&bp->pool[i], l);
+        update_bullet(&bp->pool[i], l, s);
     }
 }
 

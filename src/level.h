@@ -2,9 +2,7 @@
 
 #include <riv.h>
 #include "const.h"
-
-#define SCREEN_TILES_X (SCREEN_WIDTH / TILE_SIZE)
-#define SCREEN_TILES_Y (SCREEN_HEIGHT / TILE_SIZE)
+#include "score.h"
 
 typedef struct level
 {
@@ -16,7 +14,7 @@ typedef struct level
 void init_level(Level* l);
 void update_level(Level* l);
 void draw_level(Level* l);
-bool tile_collision(riv_rectf object, Level l);
+bool tile_collision(riv_rectf object, Level l, Score* s);
 
 
 enum tiles

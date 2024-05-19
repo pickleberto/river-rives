@@ -12,7 +12,7 @@
 
 BulletPool bullets;
 
-void init_player(Player* p)
+void init_player(Player* p, Score* s)
 {
     p->isDead = false;
     p->rect = (riv_rectf) { 
@@ -23,8 +23,10 @@ void init_player(Player* p)
     p->sprite_id = 0;
     p->flip_x = 1;
     p->isFinalScreen = false;
+    p->score = s;
 
     init_bulletPool(&bullets);
+    init_score(p->score);
 }
 
 void update_vertical(Player* p, Level* l)
@@ -70,7 +72,7 @@ void update_fire(Player* p, Level* l)
         }
     }
 
-    update_bulletPool(&bullets, l);
+    update_bulletPool(&bullets, l, p->score);
 }
 
 void update_player(Player* p, Level* l)
@@ -79,7 +81,8 @@ void update_player(Player* p, Level* l)
     
     update_horizontal(p);
     update_fire(p, l);
-    update_vertical(p, l);   
+    update_vertical(p, l);
+    update_score(p->score);   
 }
 
 void draw_player(Player* p)
@@ -94,6 +97,7 @@ void draw_player(Player* p)
     }
 
     draw_bulletPool(&bullets);
+    draw_score(p->score);
 }
 
 void kill_player(Player* p)

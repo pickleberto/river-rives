@@ -15,7 +15,7 @@ void init_bullet(Bullet* b, float screen_x, float screen_y)
     b->isActive = true;
 }
 
-void update_bullet(Bullet* b, Level* l)
+void update_bullet(Bullet* b, Level* l, Score* s)
 {
     if(!b->isActive) return;
 
@@ -25,7 +25,7 @@ void update_bullet(Bullet* b, Level* l)
         b->isActive = false;
     }
 
-    if(tile_collision(b->rect, *l))
+    if(tile_collision(b->rect, *l, s))
     {
         b->isActive = false;
         sfx_explosion();
