@@ -16,7 +16,7 @@ void update_game(Game* g)
     if(g->player->isDead) return;
     
     update_level(g->level);
-    update_player(g->player);
+    update_player(g->player, g->level);
 
     if(tile_collision(g->player->rect, *g->level))
     {

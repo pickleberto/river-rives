@@ -1,6 +1,7 @@
 #pragma once
 
 #include <riv.h>
+#include "level.h"
 
 typedef struct player
 {
@@ -12,7 +13,7 @@ typedef struct player
 } Player;
 
 void init_player(Player* p);
-void update_player(Player* p);
+void update_player(Player* p, Level* l);
 void draw_player(Player* p);
 
 void kill_player(Player* p);

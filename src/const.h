@@ -12,3 +12,5 @@
 #define HALF_TILE (TILE_SIZE / 2)
 
 #define GAME_SPRITESHEET 1
+
+#define NULL_POINTER ( (void *) 0)

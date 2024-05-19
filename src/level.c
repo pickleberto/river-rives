@@ -45,8 +45,8 @@ int full_level_map[FULL_TILES_Y][SCREEN_TILES_X] =
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
-    {1,1,1,0,0,0,0,0,1,0,0,0,0,1,1,1},
-    {1,1,1,0,0,0,0,0,1,0,0,0,0,1,1,1},
+    {1,1,1,0,0,0,0,0,2,0,0,0,0,1,1,1},
+    {1,1,1,0,0,0,0,0,2,0,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
@@ -98,7 +98,7 @@ void draw_tile(int tile_x, int tile_y, int tile, float offset)
         color = RIV_COLOR_BLUE;
         break;
     case OBSTACLE:
-        color = RIV_COLOR_YELLOW;
+        color = RIV_COLOR_LIGHTBROWN;
         break;
     case BORDER:
         color = RIV_COLOR_DARKGREEN;
@@ -123,29 +123,23 @@ void draw_level(Level* l)
     }
 }
 
-void breakable_tile(float x, float y, Level l)
-{
-    int tile_x = x / SCREEN_TILES_X;
-    int tile_y = ((y - l.map_offset) / SCREEN_TILES_Y) + l.min_y + 1;
-    // remember full_level_map is inverted
-    if(full_level_map[tile_y][tile_x] >= OBSTACLE)
-    {
-        full_level_map[tile_y][tile_x] = HOLE;
-    }
-}
-
 bool screen_tile_collision(float x, float y, Level l)
 {
     int tile_x = x / SCREEN_TILES_X;
     int tile_y = ((y - l.map_offset) / SCREEN_TILES_Y) + l.min_y + 1;
+
     // remember full_level_map is inverted
+    if(full_level_map[tile_y][tile_x] >= OBSTACLE)
+    {
+        full_level_map[tile_y][tile_x] = RIVER; //if destructable, then destroy it
+        return true;
+    }
+
     return full_level_map[tile_y][tile_x] >= BORDER;
 }
 
 bool tile_collision(riv_rectf object, Level l)
 {
-    breakable_tile(object.x, object.y, l);
-
     bool edge1 = screen_tile_collision(object.x,                   object.y,                   l);
     bool edge2 = screen_tile_collision(object.x + object.width,    object.y,                   l);
     bool edge3 = screen_tile_collision(object.x,                   object.y + object.height,   l);

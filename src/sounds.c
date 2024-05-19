@@ -19,6 +19,13 @@ riv_waveform_desc move = {
     .amplitude = 0.5f, .sustain_level = 0.5f, .duty_cycle = 0.5f, .pan = 0,
 };
 
+riv_waveform_desc shoot = {
+    .type = RIV_WAVEFORM_PULSE,
+    .attack = 0.05f, .decay = 0.05f, .sustain = 0.15f, .release = 0.075f,
+    .start_frequency = RIV_NOTE_A2, .end_frequency = RIV_NOTE_A0,
+    .amplitude = .75f, .sustain_level = 0.25f, .duty_cycle = 0.65f, .pan = 0,
+};
+
 void sfx_explosion()
 {
     riv_waveform(&explosion);
@@ -32,4 +39,9 @@ void sfx_move()
         riv_waveform(&move);
         last_frame = riv->frame;
     }
+}
+
+void sfx_shoot()
+{
+    riv_waveform(&shoot);
 }
