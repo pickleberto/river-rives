@@ -120,7 +120,7 @@ void draw_level(Level* l)
 bool tile_collision(float x, float y, Level l)
 {
     int tile_x = x / SCREEN_TILES_X;
-    int tile_y = (y / SCREEN_TILES_Y) + l.min_y;
+    int tile_y = ((y - l.map_offset) / SCREEN_TILES_Y) + l.min_y + 1;
     // remember full_level_map is inverted
     return full_level_map[tile_y][tile_x] == BORDER;
 }
