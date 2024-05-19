@@ -8,7 +8,9 @@
 
 typedef struct level
 {
-    int screen_tiles[SCREEN_TILES_X][SCREEN_TILES_Y];
+    int screen_speed;
+    int map_offset;
+    int min_y, max_y; // index range to be displayed on screen
 } Level;
 
 void init_level(Level* l);

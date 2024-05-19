@@ -27,10 +27,8 @@ void sfx_explosion()
 uint64_t last_frame = 0ULL;
 void sfx_move()
 {
-    riv_printf("move %llu %llu %llu\n", last_frame , WAVEFORM_FRAMES, riv->frame);
     if((last_frame + WAVEFORM_FRAMES) < riv->frame)
     {
-        riv_printf("play sound");
         riv_waveform(&move);
         last_frame = riv->frame;
     }

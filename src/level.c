@@ -1,8 +1,27 @@
 #include "level.h"
 
+#define FULL_TILES_Y (SCREEN_TILES_Y * 3)
+
 // invert here for better visualization
-int full_level_map[SCREEN_TILES_Y][SCREEN_TILES_X] = 
+int full_level_map[FULL_TILES_Y][SCREEN_TILES_X] = 
 {
+    {1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
+    {1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1},
+    {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1},
+    {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
+    {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
+    {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
+    {1,1,1,0,0,0,0,0,1,0,0,0,0,1,1,1},
+    {1,1,1,0,0,0,0,0,1,0,0,0,0,1,1,1},
+    {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
+    {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
+    {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
+    {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1},
+    {1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1},
+    {1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
+    {1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
+    {1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
+
     {1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
     {1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1},
     {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1},
@@ -11,6 +30,23 @@ int full_level_map[SCREEN_TILES_Y][SCREEN_TILES_X] =
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
+    {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
+    {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
+    {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
+    {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1},
+    {1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1},
+    {1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
+    {1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
+    {1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
+
+    {1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
+    {1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1},
+    {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1},
+    {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
+    {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
+    {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
+    {1,1,1,0,0,0,0,0,1,0,0,0,0,1,1,1},
+    {1,1,1,0,0,0,0,0,1,0,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
@@ -21,26 +57,39 @@ int full_level_map[SCREEN_TILES_Y][SCREEN_TILES_X] =
     {1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
 };
 
-
+void reset_y_index(Level* l)
+{
+    l->min_y = (FULL_TILES_Y - SCREEN_TILES_Y) - 1;
+    l->max_y = FULL_TILES_Y;
+}
 
 void init_level(Level* l)
 {
-    for(int i = 0; i < SCREEN_TILES_X; i++)
-    {
-        for(int j = 0; j < SCREEN_TILES_Y; j++)
-        {
-            // remember full_level_map is inverted
-            l->screen_tiles[i][j] = full_level_map[j][i];
-        }
-    }
-    // l->screen_tiles = full_level_map;
+    l->screen_speed = 1; // pixels per frame
+    l->map_offset = 0;
+    reset_y_index(l);
 }
+
 void update_level(Level* l)
 {
+    if(l->map_offset + l->screen_speed >= TILE_SIZE)
+    {
+        l->map_offset = (l->map_offset + l->screen_speed) - TILE_SIZE;
+        l->min_y--;
+        l->max_y--;
 
+        if(l->min_y <= 0)
+        {
+            reset_y_index(l);
+        }
+    }
+    else
+    {
+        l->map_offset = (l->map_offset + l->screen_speed);
+    }
 }
 
-void draw_tile(int tile_x, int tile_y, int tile)
+void draw_tile(int tile_x, int tile_y, int tile, float offset)
 {
     uint32_t color;
     switch (tile)
@@ -53,16 +102,17 @@ void draw_tile(int tile_x, int tile_y, int tile)
         color = RIV_COLOR_DARKGREEN;
         break;
     }
-    riv_draw_rect_fill(tile_x * TILE_SIZE, tile_y * TILE_SIZE, TILE_SIZE, TILE_SIZE, color);
+    riv_draw_rect_fill(tile_x * TILE_SIZE, (tile_y * TILE_SIZE) + offset - TILE_SIZE, TILE_SIZE, TILE_SIZE, color);
 }
 
 void draw_level(Level* l)
 {
     for(int i = 0; i < SCREEN_TILES_X; i++)
     {
-        for(int j = 0; j < SCREEN_TILES_Y; j++)
+        for(int j = l->min_y; j < l->max_y; j++)
         {
-            draw_tile(i, j, l->screen_tiles[i][j]);
+            // remember full_level_map is inverted
+            draw_tile(i, j - l->min_y, full_level_map[j][i], l->map_offset);
         }
     }
 }
@@ -70,8 +120,9 @@ void draw_level(Level* l)
 bool tile_collision(float x, float y, Level l)
 {
     int tile_x = x / SCREEN_TILES_X;
-    int tile_y = y / SCREEN_TILES_Y;
-    return l.screen_tiles[tile_x][tile_y] == BORDER;
+    int tile_y = (y / SCREEN_TILES_Y) + l.min_y;
+    // remember full_level_map is inverted
+    return full_level_map[tile_y][tile_x] == BORDER;
 }
 
 bool border_collision(riv_rectf object, Level l)
