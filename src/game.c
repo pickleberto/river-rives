@@ -18,7 +18,7 @@ void update_game(Game* g)
     update_level(g->level);
     update_player(g->player);
 
-    if(border_collision(g->player->rect, *g->level))
+    if(tile_collision(g->player->rect, *g->level))
     {
         kill_player(g->player);
         

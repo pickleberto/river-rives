@@ -16,11 +16,13 @@ typedef struct level
 void init_level(Level* l);
 void update_level(Level* l);
 void draw_level(Level* l);
-bool border_collision(riv_rectf object, Level l);
+bool tile_collision(riv_rectf object, Level l);
 
 
 enum tiles
 {
+    HOLE = -1,
     RIVER = 0,
     BORDER = 1,
+    OBSTACLE = 2,
 };
