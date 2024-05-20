@@ -13,14 +13,14 @@ play: $(cartridge)
 	rivemu -sdk $(cartridge)
 
 $(game): $(OBJS)
-	$(rivemuexec) 'gcc -o $(game) $(OBJS) $$(riv-opt-flags -Ospeed -Osize)'
+	$(rivemuexec) 'gcc -o $(game) $(OBJS) $$(riv-opt-flags -Ospeed)'
 	$(rivemuexec) riv-strip $(game)
 
 $(cartridge): $(game) $(SPRITES)
 	$(rivemuexec) riv-mksqfs $(game) $(SPRITES) $(cartridge) -comp xz
 
 $(OBJDIR)/%.o : src/%.c
-	$(rivemuexec) 'gcc $< -o $@ -c $$(riv-opt-flags -Ospeed -Osize)'
+	$(rivemuexec) 'gcc $< -o $@ -c'
 
 $(OBJS): | $(OBJDIR)
 
