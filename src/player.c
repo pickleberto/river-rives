@@ -50,6 +50,11 @@ void update_vertical(Player* p, Level* l)
     {
         p->rect.y -= l->screen_speed;
     }
+
+    if(!p->score->completed && p->rect.y <= 0)
+    {
+        add_completion_bonus(p->score);
+    }
 }
 
 void update_horizontal(Player* p)

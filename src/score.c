@@ -13,15 +13,18 @@ void init_score(Score* s)
     s->ticks = 0;
     s->obstacles_destroyed = 0;
     s->fuel = MAX_FUEL;
+    s->completed = false;
 }
 
 void update_score(Score* s) 
 {
     s->ticks++;
     s->fuel--;
-    s->score = (s->obstacles_destroyed * 100) + s->fuel - (s->ticks / 10);
-    riv->outcard_len = riv_snprintf((char*)riv->outcard, RIV_SIZE_OUTCARD, 
-        "JSON{\"score\":%d,\"obstacles\":%d,\"ticks\":%d}", s->score, s->obstacles_destroyed, s->ticks);
+    int bonus = s->completed ? 1000 : 0;
+    s->score = (s->obstacles_destroyed * 100) + s->fuel - (s->ticks / 10) + bonus;
+    riv->outcard_len = riv_snprintf((char*)riv->outcard, RIV_SIZE_OUTCARD
+        , "JSON{\"score\":%d,\"obstacles\":%d,\"ticks\":%d,\"completed\":%d}"
+        , s->score, s->obstacles_destroyed, s->ticks, s->completed);
 }
 
 void draw_score(Score* s)
@@ -60,4 +63,9 @@ void add_fuel(Score* s)
     {
         sfx_fuel();
     }
+}
+
+void add_completion_bonus(Score* s)
+{
+    s->completed = true;
 }
