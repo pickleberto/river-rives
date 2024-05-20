@@ -54,3 +54,4 @@ dkms.conf
 # cartrige files
 *.elf
 *.sqfs
+0-entry.sh

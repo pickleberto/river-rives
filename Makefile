@@ -3,9 +3,8 @@ cartridge = $(game_name).sqfs
 rivemuexec = rivemu -quiet -no-window -sdk -workspace -exec
 entry = 0-entry.sh
 SPRITES := $(wildcard sprites/*.png)
-SOURCES := $(wildcard src/*.c)
-HEADERS := $(wildcard src/*.h)
-C_FILES := $(patsubst src/%.c,%.c,$(wildcard src/*.c))
+SOURCES := $(wildcard sf/*.c)
+HEADERS := $(wildcard sf/*.h)
 
 play: $(cartridge)
 	rivemu $(cartridge)
@@ -14,7 +13,7 @@ $(cartridge): $(SOURCES) $(HEADERS) $(SPRITES) |$(entry)
 	$(rivemuexec) riv-mksqfs $(SOURCES) $(HEADERS) $(SPRITES) $(entry) $(cartridge) -comp xz
 
 $(entry):
-	echo "riv-jit-c $(C_FILES)" > $(entry)
+	echo "riv-jit-c main.c" > $(entry)
 	chmod +x $(entry)
 
 clean:
