@@ -16,11 +16,11 @@ void init_enemy(Enemy* e, riv_vec2f pos)
 void update_enemy(Enemy* e, float map_speed)
 {
     if(!e->isActive) return;
-    
+
     e->rect.y += map_speed;
     e->rect.x += ENEMY_SPEED;
 
-    if(e->rect.y > SCREEN_HEIGHT)
+    if(e->rect.y > SCREEN_HEIGHT || e->rect.x > SCREEN_WIDTH || e->rect.x < 0)
     {
         e->isActive = false;
     }

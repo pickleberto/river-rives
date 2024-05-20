@@ -18,7 +18,7 @@ void update_level(Level* l);
 void draw_level(Level* l);
 bool tile_collision(riv_rectf object, Level l, Score* s);
 bool player_tile_collision(riv_rectf object, Level l, Score* s);
-
+bool enemies_collision(riv_rectf object, Score* s);
 
 enum tiles
 {

@@ -40,7 +40,12 @@ void add_enemies(Level* l)
 
 void update_level(Level* l)
 {
-    if(l->min_y <= 0) return; // lock map on final screen
+    
+    if(l->min_y <= 0) // lock map on final screen
+    {
+        update_enemyPool(&enemies, 0);
+        return;
+    }
 
     if(l->map_offset + l->screen_speed >= TILE_SIZE)
     {
@@ -112,7 +117,6 @@ bool screen_tile_collision(float x, float y, Level l, Score* s)
     if(full_level_map[tile_y][tile_x] >= OBSTACLE)
     {
         if(full_level_map[tile_y][tile_x] == OBSTACLE) add_obstacle_score(s);
-        if(full_level_map[tile_y][tile_x] == ENEMY) add_enemy_score(s);
 
         full_level_map[tile_y][tile_x] = RIVER; //if destructable, then destroy it
         return true;
@@ -140,7 +144,6 @@ bool screen_player_tile_collision(float x, float y, Level l, Score* s)
     if(full_level_map[tile_y][tile_x] >= OBSTACLE && full_level_map[tile_y][tile_x] != FUEL)
     {
         if(full_level_map[tile_y][tile_x] == OBSTACLE) add_obstacle_score(s);
-        if(full_level_map[tile_y][tile_x] == ENEMY) add_enemy_score(s);
 
         full_level_map[tile_y][tile_x] = RIVER; //if destructable, then destroy it
         return true;
@@ -162,4 +165,12 @@ bool player_tile_collision(riv_rectf object, Level l, Score* s)
     bool edge4 = screen_player_tile_collision(object.x + object.width,    object.y + object.height,   l,   s);
     
     return edge1 || edge2 || edge3 || edge4;
+}
+
+bool enemies_collision(riv_rectf object, Score* s)
+{
+    if(collison_enemyPool(&enemies, object))
+    {
+        add_enemy_score(s);
+    }    
 }

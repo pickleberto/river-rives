@@ -25,7 +25,7 @@ void update_bullet(Bullet* b, Level* l, Score* s)
         b->isActive = false;
     }
 
-    if(tile_collision(b->rect, *l, s))
+    if(tile_collision(b->rect, *l, s) || enemies_collision(b->rect, s))
     {
         b->isActive = false;
         sfx_explosion();
