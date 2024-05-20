@@ -6,9 +6,11 @@
 #define SCALE_X 1
 #define SCALE_Y 1
 
-#define PIXELS_PER_FRAME ((float) TILE_SIZE/TARGET_FPS)
-#define BASE_SPEED (2.f * PIXELS_PER_FRAME)
+#define TILES_PER_SECOND ((float) TILE_SIZE/TARGET_FPS)
+#define BASE_SPEED (2.f * TILES_PER_SECOND)
 #define SHOOT_COOLDOWN_FRAMES (uint64_t) (0.25f * TARGET_FPS)
+
+#define ACCELERATION 2.5f
 
 BulletPool bullets;
 
@@ -31,9 +33,23 @@ void init_player(Player* p, Score* s)
 
 void update_vertical(Player* p, Level* l)
 {
-    if(!p->isFinalScreen) return;
+    float y = BASE_MAP_SPEED;
     
-    p->rect.y -= l->screen_speed;
+    if(riv->keys[RIV_GAMEPAD_UP].down)
+    {
+        y *= ACCELERATION;
+    }
+    else if(riv->keys[RIV_GAMEPAD_DOWN].down)
+    {
+        y /= ACCELERATION;
+    }
+
+    l->screen_speed = y;
+
+    if(p->isFinalScreen) 
+    {
+        p->rect.y -= l->screen_speed;
+    }
 }
 
 void update_horizontal(Player* p)

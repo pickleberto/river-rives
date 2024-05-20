@@ -4,7 +4,7 @@
 
 void init_level(Level* l)
 {
-    l->screen_speed = 1; // pixels per frame
+    l->screen_speed = BASE_MAP_SPEED; // pixels per frame
     l->map_offset = 0;
     
     l->min_y = (FULL_TILES_Y - SCREEN_TILES_Y) - 1;

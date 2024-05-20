@@ -4,10 +4,12 @@
 #include "const.h"
 #include "score.h"
 
+#define BASE_MAP_SPEED 1
+
 typedef struct level
 {
-    int screen_speed;
-    int map_offset;
+    float screen_speed;
+    float map_offset;
     int min_y, max_y; // index range to be displayed on screen
 } Level;
 
