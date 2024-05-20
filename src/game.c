@@ -21,7 +21,7 @@ void update_game(Game* g)
     update_level(g->level);
     update_player(g->player, g->level);
 
-    if(tile_collision(g->player->rect, *g->level, g->player->score))
+    if(player_tile_collision(g->player->rect, *g->level, g->player->score) || (g->player->score->fuel <= 0))
     {
         kill_player(g->player);
         

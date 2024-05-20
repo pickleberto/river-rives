@@ -15,6 +15,7 @@ void init_level(Level* l);
 void update_level(Level* l);
 void draw_level(Level* l);
 bool tile_collision(riv_rectf object, Level l, Score* s);
+bool player_tile_collision(riv_rectf object, Level l, Score* s);
 
 
 enum tiles
@@ -23,4 +24,5 @@ enum tiles
     RIVER = 0,
     BORDER = 1,
     OBSTACLE = 2,
+    FUEL = 3,
 };
