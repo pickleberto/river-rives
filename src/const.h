@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CONST_H
+#define CONST_H
 
 #define TARGET_FPS 60
 
@@ -17,3 +18,5 @@
 #define GAME_SPRITESHEET 1
 
 #define NULL_POINTER ( (void *) 0)
+
+#endif

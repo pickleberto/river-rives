@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LEVEL_H
+#define LEVEL_H
 
 #include <riv.h>
 #include "const.h"
@@ -28,3 +29,5 @@ enum tiles
     OBSTACLE = 2,
     FUEL = 3,
 };
+
+#endif

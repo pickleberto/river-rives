@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GAME_H
+#define GAME_H
 
 #include <riv.h>
 #include "player.h"
@@ -16,3 +17,5 @@ typedef struct game
 void init_game(Game* g, Player* p, Level* l);
 void update_game(Game* g);
 void draw_game(Game* g);
+
+#endif

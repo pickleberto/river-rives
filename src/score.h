@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SCORE_H
+#define SCORE_H
 
 #include <riv.h>
 
@@ -15,3 +16,5 @@ void update_score(Score* s);
 void draw_score(Score* s);
 void add_obstacle(Score* s);
 void add_fuel(Score* s);
+
+#endif
