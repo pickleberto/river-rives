@@ -27,5 +27,6 @@ enum tiles
     BORDER = 1,
     OBSTACLE = 2,
     FUEL = 3,
-    ENEMY = 4,
+    ENEMY_SLOW = 4,
+    ENEMY_FAST = 5,
 };

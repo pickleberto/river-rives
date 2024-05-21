@@ -22,16 +22,16 @@ void add_enemies(Level* l)
     {
         for(int j = l->min_y; j < l->max_y; j++)
         {
-            if(full_level_map[j][i] == ENEMY)
+            if(full_level_map[j][i] >= ENEMY_SLOW)
             {
                 Enemy* e = get_enemy(&enemies);
 
                 if(e != NULL_POINTER)
                 {
-                    full_level_map[j][i] = RIVER;
                     int enemy_x = i * TILE_SIZE;
                     int enemy_y = (j - l->min_y) * TILE_SIZE + l->map_offset;
-                    init_enemy(e, (riv_vec2f) {.x = enemy_x, .y = enemy_y,});
+                    init_enemy(e, (riv_vec2f) {.x = enemy_x, .y = enemy_y,}, full_level_map[j][i] - ENEMY_SLOW);
+                    full_level_map[j][i] = RIVER;
                 }
             }
         }
