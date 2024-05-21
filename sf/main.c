@@ -1,67 +1,8 @@
 #include "headers.h"
 
-// defines
 #define BULLET_WIDTH 2
 #define BULLET_HEIGHT 4
 #define BULLET_SPEED 5
-
-#define SCALE_X 1
-#define SCALE_Y 1
-
-#define TILES_PER_SECOND ((float) TILE_SIZE/TARGET_FPS)
-#define BASE_SPEED (2.f * TILES_PER_SECOND)
-#define SHOOT_COOLDOWN_FRAMES (uint64_t) (0.25f * TARGET_FPS)
-
-#define ACCELERATION 2.5f
-
-#define MAX_FUEL (10 * TARGET_FPS)
-#define FUEL_WIDTH (2 * TILE_SIZE)
-#define FUEL_HEIGHT (HALF_TILE)
-
-#define WAVEFORM_FRAMES (uint64_t)(.5f * TARGET_FPS)
-
-// global vars
-Score s;
-BulletPool bullets;
-Game g;
-Player p;
-Level l;
-
-riv_waveform_desc explosion = {
-    .type = RIV_WAVEFORM_NOISE,
-    .attack = 0.025f, .decay = 0.1f, .sustain = 0.5f, .release = 0.025f,
-    .start_frequency = RIV_NOTE_A2, .end_frequency = RIV_NOTE_A0,
-    .amplitude = 1.f, .sustain_level = 0.5f, .duty_cycle = 0.5f, .pan = 0,
-};
-
-riv_waveform_desc move = {
-    .type = RIV_WAVEFORM_NOISE,
-    .attack = 0.025f, .decay = 0.1f, .sustain = 0.5f, .release = 0.025f,
-    .start_frequency = RIV_NOTE_G1, .end_frequency = RIV_NOTE_G1,
-    .amplitude = 0.5f, .sustain_level = 0.5f, .duty_cycle = 0.5f, .pan = 0,
-};
-
-riv_waveform_desc shoot = {
-    .type = RIV_WAVEFORM_PULSE,
-    .attack = 0.05f, .decay = 0.05f, .sustain = 0.15f, .release = 0.075f,
-    .start_frequency = RIV_NOTE_A5, .end_frequency = RIV_NOTE_A3,
-    .amplitude = .75f, .sustain_level = 0.25f, .duty_cycle = 0.65f, .pan = 0,
-};
-
-riv_waveform_desc fuel = {
-    .type = RIV_WAVEFORM_TRIANGLE,
-    .attack = 0.025f, .decay = 0.075f, .sustain = 0.125f, .release = 0.12f,
-    .start_frequency = RIV_NOTE_A6, .end_frequency = RIV_NOTE_A6,
-    .amplitude = .25f, .sustain_level = 0.3f, .duty_cycle = 0.5f, .pan = 0,
-};
-
-riv_waveform_desc max_fuel = {
-    .type = RIV_WAVEFORM_TRIANGLE,
-    .attack = 0.025f, .decay = 0.075f, .sustain = 0.125f, .release = 0.12f,
-    .start_frequency = RIV_NOTE_A6, .end_frequency = RIV_NOTE_E7,
-    .amplitude = .5f, .sustain_level = 0.3f, .duty_cycle = 0.5f, .pan = 0,
-};
-
 
 void init_bullet(Bullet* b, float screen_x, float screen_y)
 {
@@ -82,7 +23,7 @@ void update_bullet(Bullet* b, Level* l, Score* s)
         b->isActive = false;
     }
 
-    if(tile_collision(b->rect, *l, s))
+    if(tile_collision(b->rect, *l, s) || enemies_collision(b->rect, s))
     {
         b->isActive = false;
         sfx_explosion();
@@ -95,6 +36,9 @@ void draw_bullet(Bullet* b)
 
     riv_draw_rect_fill(b->rect.x, b->rect.y, b->rect.width, b->rect.height, RIV_COLOR_YELLOW);
 }
+
+
+Score s;
 
 void init_game(Game* g, Player* p, Level* l)
 {
@@ -109,12 +53,14 @@ void init_game(Game* g, Player* p, Level* l)
 
 void update_game(Game* g)
 {
-    if(g->game_over) return;
-    
     update_level(g->level);
     update_player(g->player, g->level);
 
-    if(player_tile_collision(g->player->rect, *g->level, g->player->score) || (g->player->score->fuel <= 0))
+    if(g->game_over) return;
+    
+    if(player_tile_collision(g->player->rect, *g->level, g->player->score) 
+        || enemies_collision(g->player->rect, g->player->score)
+        || (g->player->score->fuel <= 0))
     {
         kill_player(g->player);
         
@@ -134,6 +80,11 @@ void update_game(Game* g)
         riv->quit_frame = riv->frame + 3*riv->target_fps;
         g->game_over = true;
     }
+
+    if(g->game_over)
+    {
+        g->level->screen_speed = 0;
+    }
 }
 
 void draw_game(Game* g)
@@ -147,6 +98,86 @@ void draw_game(Game* g)
     }
 }
 
+
+
+#define ENEMY_SPEED 1
+#define ENEMY_SLOW_BASE_SPRITE_ID 2
+#define ENEMY_FAST_BASE_SPRITE_ID 4
+#define DEATH_ANIM_TIME (1 * TARGET_FPS)
+
+void init_enemy(Enemy* e, riv_vec2f pos, int enemy_type)
+{
+    e->rect = (riv_rectf) { 
+        .x = pos.x, .y = pos.y,
+        .width = TILE_SIZE, .height = TILE_SIZE, 
+    };
+    e->isActive = true;
+    e->isDead = false;
+    e->speed = ENEMY_SPEED;
+    e->enemy_type = enemy_type;
+    e->flip_x = -1;
+    e->sprite_id = ENEMY_SLOW_BASE_SPRITE_ID;
+
+    if(pos.x > SCREEN_WIDTH/2)
+    {
+        e->speed *= -1;
+        e->flip_x = 1;
+    }
+
+    if(enemy_type == FAST_TYPE)
+    {
+        e->speed *= 2;
+        e->sprite_id = ENEMY_FAST_BASE_SPRITE_ID;
+    }
+}
+
+void update_enemy(Enemy* e, float map_speed)
+{
+    if(!e->isActive) return;
+
+    if(e->isDead)
+    {
+        e->rect.y += map_speed;
+        e->sprite_id = EXPLOSION_SPRITE_ID  + (riv->frame / ANIM_RATE) % ANIM_SPRITES;
+
+        if(e->deathFrame + DEATH_ANIM_TIME <= riv->frame)
+        {
+            e->isActive = false;
+        }
+    }
+    else
+    {
+        e->rect.y += map_speed;
+        e->rect.x += e->speed;
+        int base_id = e->enemy_type == FAST_TYPE ? ENEMY_FAST_BASE_SPRITE_ID : ENEMY_SLOW_BASE_SPRITE_ID;
+        e->sprite_id = base_id + (riv->frame / ANIM_RATE) % ANIM_SPRITES;
+
+        if(e->rect.y > SCREEN_HEIGHT || e->rect.x > SCREEN_WIDTH || e->rect.x < 0)
+        {
+            e->isActive = false;
+        }
+    }
+}
+
+void draw_enemy(Enemy* e)
+{
+    if(!e->isActive) return;
+
+    riv_draw_sprite(e->sprite_id, GAME_SPRITESHEET, e->rect.x, e->rect.y, 1, 1, SPRITE_SCALE_X * e->flip_x, SPRITE_SCALE_Y);
+}
+
+void kill_enemy(Enemy* e)
+{
+    e->deathFrame = riv->frame;
+    e->isDead = true;
+}
+
+
+
+
+
+EnemyPool enemies;
+
 void init_level(Level* l)
 {
     l->screen_speed = BASE_MAP_SPEED; // pixels per frame
@@ -154,11 +185,40 @@ void init_level(Level* l)
     
     l->min_y = (FULL_TILES_Y - SCREEN_TILES_Y) - 1;
     l->max_y = FULL_TILES_Y;
+
+    init_enemyPool(&enemies);
+}
+
+void add_enemies(Level* l)
+{
+    for(int i = 0; i < SCREEN_TILES_X; i++)
+    {
+        for(int j = l->min_y; j < l->max_y; j++)
+        {
+            if(full_level_map[j][i] >= ENEMY_SLOW)
+            {
+                Enemy* e = get_enemy(&enemies);
+
+                if(e != NULL_POINTER)
+                {
+                    int enemy_x = i * TILE_SIZE;
+                    int enemy_y = (j - l->min_y) * TILE_SIZE + l->map_offset;
+                    init_enemy(e, (riv_vec2f) {.x = enemy_x, .y = enemy_y,}, full_level_map[j][i] - ENEMY_SLOW);
+                    full_level_map[j][i] = RIVER;
+                }
+            }
+        }
+    }
 }
 
 void update_level(Level* l)
 {
-    if(l->min_y <= 0) return; // lock map on final screen
+    
+    if(l->min_y <= 0) // lock map on final screen
+    {
+        update_enemyPool(&enemies, 0);
+        return;
+    }
 
     if(l->map_offset + l->screen_speed >= TILE_SIZE)
     {
@@ -171,11 +231,15 @@ void update_level(Level* l)
             l->min_y = 0;
             l->max_y = SCREEN_TILES_Y + 1;
         }
+
+        add_enemies(l);
     }
     else
     {
         l->map_offset = (l->map_offset + l->screen_speed);
     }
+
+    update_enemyPool(&enemies, l->screen_speed);
 }
 
 void draw_tile(int tile_x, int tile_y, int tile, float offset)
@@ -213,6 +277,8 @@ void draw_level(Level* l)
             draw_tile(i, j - l->min_y, full_level_map[j][i], l->map_offset);
         }
     }
+
+    draw_enemyPool(&enemies);
 }
 
 bool screen_tile_collision(float x, float y, Level l, Score* s)
@@ -223,8 +289,9 @@ bool screen_tile_collision(float x, float y, Level l, Score* s)
     // remember full_level_map is inverted
     if(full_level_map[tile_y][tile_x] >= OBSTACLE)
     {
+        if(full_level_map[tile_y][tile_x] == OBSTACLE) add_obstacle_score(s);
+
         full_level_map[tile_y][tile_x] = RIVER; //if destructable, then destroy it
-        add_obstacle(s);
         return true;
     }
 
@@ -249,8 +316,9 @@ bool screen_player_tile_collision(float x, float y, Level l, Score* s)
     // remember full_level_map is inverted
     if(full_level_map[tile_y][tile_x] >= OBSTACLE && full_level_map[tile_y][tile_x] != FUEL)
     {
+        if(full_level_map[tile_y][tile_x] == OBSTACLE) add_obstacle_score(s);
+
         full_level_map[tile_y][tile_x] = RIVER; //if destructable, then destroy it
-        add_obstacle(s);
         return true;
     }
 
@@ -271,6 +339,25 @@ bool player_tile_collision(riv_rectf object, Level l, Score* s)
     
     return edge1 || edge2 || edge3 || edge4;
 }
+
+bool enemies_collision(riv_rectf object, Score* s)
+{
+    if(collison_enemyPool(&enemies, object))
+    {
+        add_enemy_score(s);
+    }    
+}
+
+
+
+
+#define TILES_PER_SECOND ((float) TILE_SIZE/TARGET_FPS)
+#define BASE_SPEED (2.f * TILES_PER_SECOND)
+#define SHOOT_COOLDOWN_FRAMES (uint64_t) (0.25f * TARGET_FPS)
+
+#define ACCELERATION 2.5f
+
+BulletPool bullets;
 
 void init_player(Player* p, Score* s)
 {
@@ -307,6 +394,11 @@ void update_vertical(Player* p, Level* l)
     if(p->isFinalScreen) 
     {
         p->rect.y -= l->screen_speed;
+    }
+
+    if(!p->score->completed && p->rect.y <= 0)
+    {
+        add_completion_bonus(p->score);
     }
 }
 
@@ -351,25 +443,22 @@ void update_fire(Player* p, Level* l)
 
 void update_player(Player* p, Level* l)
 {
-    if(p->isDead) return;
-    
-    update_horizontal(p);
-    update_fire(p, l);
-    update_vertical(p, l);
-    update_score(p->score);   
+    if(p->isDead)
+    {
+        p->sprite_id = EXPLOSION_SPRITE_ID  + (riv->frame / ANIM_RATE) % ANIM_SPRITES;
+    }
+    else
+    {
+        update_horizontal(p);
+        update_fire(p, l);
+        update_vertical(p, l);
+        update_score(p->score);
+    }
 }
 
 void draw_player(Player* p)
 {
-    if(p->isDead)
-    {
-        riv_draw_rect_fill(p->rect.x, p->rect.y, TILE_SIZE, TILE_SIZE, RIV_COLOR_RED);
-    }
-    else
-    {
-        riv_draw_sprite(p->sprite_id, GAME_SPRITESHEET, p->rect.x, p->rect.y, 1, 1, SCALE_X * p->flip_x, SCALE_Y);
-    }
-
+    riv_draw_sprite(p->sprite_id, GAME_SPRITESHEET, p->rect.x, p->rect.y, 1, 1, SPRITE_SCALE_X * p->flip_x, SPRITE_SCALE_Y);
     draw_bulletPool(&bullets);
     draw_score(p->score);
 }
@@ -378,6 +467,74 @@ void kill_player(Player* p)
 {
     p->isDead = true;
     sfx_explosion();
+}
+
+
+
+void init_enemyPool(EnemyPool* ep)
+{
+    for(int i = 0; i < ENEMY_POOL_SIZE; i++)
+    {
+        ep->pool[i].isActive = false;
+        ep->pool[i].isDead = false;
+    }
+}
+
+void update_enemyPool(EnemyPool* ep, float map_speed)
+{
+    for(int i = 0; i < ENEMY_POOL_SIZE; i++)
+    {
+        update_enemy(&ep->pool[i], map_speed);
+    }
+}
+
+void draw_enemyPool(EnemyPool* ep)
+{
+    for(int i = 0; i < ENEMY_POOL_SIZE; i++)
+    {
+        draw_enemy(&ep->pool[i]);
+    }
+}
+
+Enemy* get_enemy(EnemyPool* ep)
+{
+    Enemy* e = NULL_POINTER;
+
+    for(int i = 0; i < ENEMY_POOL_SIZE; i++)
+    {
+        if(!ep->pool[i].isActive)
+        {
+            e = &ep->pool[i];
+            break;
+        }
+    }
+
+    return e;
+}
+
+bool enemy_collision(riv_rectf object, riv_rectf enemy)
+{
+    float x1 = object.x + object.width;
+    float y1 = object.y + object.height;
+    float ex1 = enemy.x + enemy.width;
+    float ey1 = enemy.y + enemy.height;
+
+    return 
+        ((object.x >= enemy.x && object.x <= ex1) ||  (x1 >= enemy.x && x1 <= ex1))
+    &&  ((object.y >= enemy.y && object.y <= ey1) ||  (y1 >= enemy.y && y1 <= ey1));
+}
+
+bool collison_enemyPool(EnemyPool* ep, riv_rectf object)
+{
+    for (int i = 0; i < ENEMY_POOL_SIZE; i++)
+    {
+        if(ep->pool[i].isActive && !ep->pool[i].isDead && enemy_collision(object, ep->pool[i].rect))
+        {
+            kill_enemy(&ep->pool[i]);
+            return true;
+        }
+    }
+    return false;
 }
 
 
@@ -423,21 +580,43 @@ Bullet* get_bullet(BulletPool* bp)
 }
 
 
+
+
+#define MAX_FUEL (10 * TARGET_FPS)
+#define FUEL_WIDTH (2 * TILE_SIZE)
+#define FUEL_HEIGHT (HALF_TILE)
+
+#define OBSTACLE_PTS 100
+#define ENEMY_PTS 250
+#define COMPLETION_PTS (ENEMY_PTS * 10)
+#define TICK_FACTOR 10
+
 void init_score(Score* s)
 {
     s->score = 0;
     s->ticks = 0;
     s->obstacles_destroyed = 0;
     s->fuel = MAX_FUEL;
+    s->completed = false;
+    s->enemies = 0;
 }
 
 void update_score(Score* s) 
 {
     s->ticks++;
     s->fuel--;
-    s->score = (s->obstacles_destroyed * 100) + s->fuel - (s->ticks / 10);
-    riv->outcard_len = riv_snprintf((char*)riv->outcard, RIV_SIZE_OUTCARD, 
-        "JSON{\"score\":%d,\"obstacles\":%d,\"ticks\":%d}", s->score, s->obstacles_destroyed, s->ticks);
+    
+    int bonus = s->completed ? COMPLETION_PTS : 0;
+    
+    s->score = (s->obstacles_destroyed * OBSTACLE_PTS) 
+        + s->fuel 
+        + (s->enemies * ENEMY_PTS) 
+        - (s->ticks / TICK_FACTOR) 
+        + bonus;
+    
+    riv->outcard_len = riv_snprintf((char*)riv->outcard, RIV_SIZE_OUTCARD
+        , "JSON{\"score\":%d,\"obstacles\":%d,\"ticks\":%d,\"completed\":%d}"
+        , s->score, s->obstacles_destroyed, s->ticks, s->completed);
 }
 
 void draw_score(Score* s)
@@ -460,7 +639,7 @@ void draw_score(Score* s)
     riv_draw_text(s->fuel > 0 ? "FUEL":"OUT OF GAS", RIV_SPRITESHEET_FONT_3X5, RIV_BOTTOM, fuel_x + FUEL_WIDTH / 2, fuel_y - 1, text_size, RIV_COLOR_WHITE);
 }
 
-void add_obstacle(Score* s)
+void add_obstacle_score(Score* s)
 {
     s->obstacles_destroyed++;
 }
@@ -477,6 +656,56 @@ void add_fuel(Score* s)
         sfx_fuel();
     }
 }
+
+void add_completion_bonus(Score* s)
+{
+    s->completed = true;
+}
+
+void add_enemy_score(Score* s)
+{
+    s->enemies++;
+}
+
+
+
+
+#define WAVEFORM_FRAMES (uint64_t)(.5f * TARGET_FPS)
+
+riv_waveform_desc explosion = {
+    .type = RIV_WAVEFORM_NOISE,
+    .attack = 0.025f, .decay = 0.1f, .sustain = 0.5f, .release = 0.025f,
+    .start_frequency = RIV_NOTE_A2, .end_frequency = RIV_NOTE_A0,
+    .amplitude = 1.f, .sustain_level = 0.5f, .duty_cycle = 0.5f, .pan = 0,
+};
+
+riv_waveform_desc move = {
+    .type = RIV_WAVEFORM_NOISE,
+    .attack = 0.025f, .decay = 0.1f, .sustain = 0.5f, .release = 0.025f,
+    .start_frequency = RIV_NOTE_G1, .end_frequency = RIV_NOTE_G1,
+    .amplitude = 0.5f, .sustain_level = 0.5f, .duty_cycle = 0.5f, .pan = 0,
+};
+
+riv_waveform_desc shoot = {
+    .type = RIV_WAVEFORM_PULSE,
+    .attack = 0.05f, .decay = 0.05f, .sustain = 0.15f, .release = 0.075f,
+    .start_frequency = RIV_NOTE_A5, .end_frequency = RIV_NOTE_A3,
+    .amplitude = .75f, .sustain_level = 0.25f, .duty_cycle = 0.65f, .pan = 0,
+};
+
+riv_waveform_desc fuel = {
+    .type = RIV_WAVEFORM_TRIANGLE,
+    .attack = 0.025f, .decay = 0.075f, .sustain = 0.125f, .release = 0.12f,
+    .start_frequency = RIV_NOTE_A6, .end_frequency = RIV_NOTE_A6,
+    .amplitude = .25f, .sustain_level = 0.3f, .duty_cycle = 0.5f, .pan = 0,
+};
+
+riv_waveform_desc max_fuel = {
+    .type = RIV_WAVEFORM_TRIANGLE,
+    .attack = 0.025f, .decay = 0.075f, .sustain = 0.125f, .release = 0.12f,
+    .start_frequency = RIV_NOTE_A6, .end_frequency = RIV_NOTE_E7,
+    .amplitude = .5f, .sustain_level = 0.3f, .duty_cycle = 0.5f, .pan = 0,
+};
 
 void sfx_explosion()
 {
@@ -513,6 +742,12 @@ void sfx_max_fuel()
     }
 }
 
+
+
+Game g;
+Player p;
+Level l;
+
 void init_riv()
 {
     // Set screen size and default frame rate
@@ -543,7 +778,7 @@ void draw_title_screen()
 {
     // Draw title
     riv_draw_text(
-        "rives raid",             // text to draw
+        "river rives",            // text to draw
         RIV_SPRITESHEET_FONT_5X7, // sprite sheet id of the font
         RIV_CENTER,               // anchor point on the text bounding box
         CENTER_X,                 // anchor x

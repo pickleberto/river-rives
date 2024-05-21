@@ -1,28 +1,27 @@
 #include <riv.h>
 
-#ifndef CONST_H
-#define CONST_H
+typedef struct enemy
+{
+    riv_rectf rect;
+    bool isActive;
+    float speed;
+    int enemy_type;
+    int sprite_id;
+    int flip_x;
+    bool isDead;
+    int deathFrame;
+} Enemy;
 
-#define TARGET_FPS 60
+void init_enemy(Enemy* e, riv_vec2f pos, int enemy_type);
+void update_enemy(Enemy* e, float map_speed);
+void draw_enemy(Enemy* e);
+void kill_enemy(Enemy* e);
 
-#define SCREEN_WIDTH 256
-#define SCREEN_HEIGHT 256
-
-#define CENTER_X (SCREEN_WIDTH / 2)
-#define CENTER_Y (SCREEN_HEIGHT / 2)
-
-#define TILE_SIZE 16
-#define HALF_TILE (TILE_SIZE / 2)
-
-#define SCREEN_TILES_X (SCREEN_WIDTH / TILE_SIZE)
-#define SCREEN_TILES_Y (SCREEN_HEIGHT / TILE_SIZE)
-
-#define GAME_SPRITESHEET 1
-
-#define NULL_POINTER ( (void *) 0)
-
-#endif
-
+enum enemyType
+{
+    SLOW_TYPE = 0,
+    FAST_TYPE = 1, 
+};
 #ifndef SCORE_H
 #define SCORE_H
 
@@ -32,13 +31,17 @@ typedef struct score
     int ticks;
     int obstacles_destroyed;
     int fuel;
+    bool completed;
+    int enemies;
 } Score;
 
 void init_score(Score* s);
 void update_score(Score* s);
 void draw_score(Score* s);
-void add_obstacle(Score* s);
+void add_obstacle_score(Score* s);
 void add_fuel(Score* s);
+void add_completion_bonus(Score* s);
+void add_enemy_score(Score* s);
 
 #endif
 
@@ -59,7 +62,7 @@ void update_level(Level* l);
 void draw_level(Level* l);
 bool tile_collision(riv_rectf object, Level l, Score* s);
 bool player_tile_collision(riv_rectf object, Level l, Score* s);
-
+bool enemies_collision(riv_rectf object, Score* s);
 
 enum tiles
 {
@@ -68,10 +71,25 @@ enum tiles
     BORDER = 1,
     OBSTACLE = 2,
     FUEL = 3,
+    ENEMY_SLOW = 4,
+    ENEMY_FAST = 5,
 };
 
 #endif
 
+
+#define ENEMY_POOL_SIZE 10
+
+typedef struct enemyPool
+{
+    Enemy pool[ENEMY_POOL_SIZE];
+} EnemyPool;
+
+void init_enemyPool(EnemyPool* ep);
+void update_enemyPool(EnemyPool* ep, float map_speed);
+void draw_enemyPool(EnemyPool* ep);
+Enemy* get_enemy(EnemyPool* ep);
+bool collison_enemyPool(EnemyPool* ep, riv_rectf object);
 #ifndef BULLET_H
 #define BULLET_H
 
@@ -87,8 +105,12 @@ void draw_bullet(Bullet* b);
 
 #endif
 
+
 #ifndef BULLET_POOL_H
 #define BULLET_POOL_H
+
+
+
 
 #define BULLET_POOL_SIZE 20
 
@@ -105,6 +127,10 @@ Bullet* get_bullet(BulletPool* bp);
 #endif
 #ifndef PLAYER_H
 #define PLAYER_H
+
+
+
+
 
 typedef struct player
 {
@@ -128,6 +154,8 @@ void kill_player(Player* p);
 #ifndef SOUNDS_H
 #define SOUNDS_H
 
+
+
 void sfx_explosion();
 void sfx_move();
 void sfx_shoot();
@@ -136,8 +164,41 @@ void sfx_max_fuel();
 
 #endif
 
+#ifndef CONST_H
+#define CONST_H
+
+#define TARGET_FPS 60
+
+#define SCREEN_WIDTH 256
+#define SCREEN_HEIGHT 256
+
+#define CENTER_X (SCREEN_WIDTH / 2)
+#define CENTER_Y (SCREEN_HEIGHT / 2)
+
+#define TILE_SIZE 16
+#define HALF_TILE (TILE_SIZE / 2)
+
+#define SCREEN_TILES_X (SCREEN_WIDTH / TILE_SIZE)
+#define SCREEN_TILES_Y (SCREEN_HEIGHT / TILE_SIZE)
+
+#define GAME_SPRITESHEET 1
+
+#define EXPLOSION_SPRITE_ID 6
+#define ANIM_SPRITES 2
+#define ANIM_RATE (TARGET_FPS / 10)
+
+#define SPRITE_SCALE_X 1
+#define SPRITE_SCALE_Y 1
+
+#define NULL_POINTER ( (void *) 0)
+#endif
+
 #ifndef GAME_H
 #define GAME_H
+
+
+
+
 
 typedef struct game
 {
@@ -156,6 +217,8 @@ void draw_game(Game* g);
 #ifndef FULL_MAP_H
 #define FULL_MAP_H
 
+
+
 #define FULL_TILES_Y (SCREEN_TILES_Y * 3)
 
 // invert here for better visualization
@@ -167,11 +230,11 @@ int full_level_map[FULL_TILES_Y][SCREEN_TILES_X] =
     {1,1,1,1,1,1,2,2,2,2,1,1,1,1,1,1},
     {1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
     {1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1},
-    {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1},
+    {4,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1},
     {1,1,1,0,0,0,0,0,3,0,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,3,0,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
-    {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
+    {1,1,1,0,4,0,0,0,0,0,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
     {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1},
     {1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1},
@@ -181,15 +244,15 @@ int full_level_map[FULL_TILES_Y][SCREEN_TILES_X] =
     // 11
     {1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
     {1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1},
-    {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1},
+    {1,1,1,1,0,4,0,0,0,0,0,0,1,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,2,1,1,1},
-    {1,1,1,1,2,1,2,0,0,0,0,0,0,1,1,1},
+    {1,1,1,1,4,1,2,0,0,0,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,3,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,3,0,0,0,1,1,1},
-    {1,1,1,0,0,0,0,0,0,3,0,0,0,1,1,1},
+    {1,1,1,4,0,0,0,0,0,3,0,0,0,1,1,1},
     {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1},
     {1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1},
     {1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
@@ -198,14 +261,14 @@ int full_level_map[FULL_TILES_Y][SCREEN_TILES_X] =
     // 10
     {1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1},
     {1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1},
-    {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1},
+    {1,1,1,1,0,0,4,0,0,0,0,0,1,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
+    {1,1,1,0,0,5,0,0,0,0,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
+    {1,1,1,0,4,0,0,0,0,0,0,0,1,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
-    {1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1},
+    {1,1,1,0,0,0,0,0,0,0,0,4,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
-    {1,1,1,0,0,3,0,0,0,0,0,0,0,1,1,1},
-    {1,1,1,0,0,3,0,0,0,0,0,0,0,1,1,1},
     {1,1,1,0,0,0,0,0,0,0,0,0,0,1,1,1},
     {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1},
     {1,1,1,1,1,0,0,0,0,0,0,1,1,1,1,1},

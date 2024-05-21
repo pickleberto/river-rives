@@ -31,3 +31,5 @@ enum tiles
     ENEMY_SLOW = 4,
     ENEMY_FAST = 5,
 };
+
+#endif
