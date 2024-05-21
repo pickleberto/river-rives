@@ -16,6 +16,10 @@
 
 #define GAME_SPRITESHEET 1
 
+#define EXPLOSION_SPRITE_ID 6
+#define ANIM_SPRITES 2
+#define ANIM_RATE (TARGET_FPS / 10)
+
 #define SPRITE_SCALE_X 1
 #define SPRITE_SCALE_Y 1
 

@@ -16,11 +16,11 @@ void init_game(Game* g, Player* p, Level* l)
 
 void update_game(Game* g)
 {
-    if(g->game_over) return;
-    
     update_level(g->level);
     update_player(g->player, g->level);
 
+    if(g->game_over) return;
+    
     if(player_tile_collision(g->player->rect, *g->level, g->player->score) 
         || enemies_collision(g->player->rect, g->player->score)
         || (g->player->score->fuel <= 0))
@@ -42,6 +42,11 @@ void update_game(Game* g)
         // Quit in 3 seconds
         riv->quit_frame = riv->frame + 3*riv->target_fps;
         g->game_over = true;
+    }
+
+    if(g->game_over)
+    {
+        g->level->screen_speed = 0;
     }
 }
 

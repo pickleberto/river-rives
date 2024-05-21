@@ -10,11 +10,14 @@ typedef struct enemy
     int enemy_type;
     int sprite_id;
     int flip_x;
+    bool isDead;
+    int deathFrame;
 } Enemy;
 
 void init_enemy(Enemy* e, riv_vec2f pos, int enemy_type);
 void update_enemy(Enemy* e, float map_speed);
 void draw_enemy(Enemy* e);
+void kill_enemy(Enemy* e);
 
 enum enemyType
 {

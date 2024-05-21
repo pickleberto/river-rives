@@ -7,6 +7,7 @@ void init_enemyPool(EnemyPool* ep)
     for(int i = 0; i < ENEMY_POOL_SIZE; i++)
     {
         ep->pool[i].isActive = false;
+        ep->pool[i].isDead = false;
     }
 }
 
@@ -58,9 +59,9 @@ bool collison_enemyPool(EnemyPool* ep, riv_rectf object)
 {
     for (int i = 0; i < ENEMY_POOL_SIZE; i++)
     {
-        if(ep->pool[i].isActive && enemy_collision(object, ep->pool[i].rect))
+        if(ep->pool[i].isActive && !ep->pool[i].isDead && enemy_collision(object, ep->pool[i].rect))
         {
-            ep->pool[i].isActive = false;
+            kill_enemy(&ep->pool[i]);
             return true;
         }
     }
