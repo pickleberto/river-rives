@@ -1,5 +1,4 @@
-#ifndef SOUNDS_H
-#define SOUNDS_H
+#pragma once
 
 #include <riv.h>
 
@@ -9,4 +8,3 @@ void sfx_shoot();
 void sfx_fuel();
 void sfx_max_fuel();
 
-#endif

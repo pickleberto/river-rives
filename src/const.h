@@ -1,5 +1,4 @@
-#ifndef CONST_H
-#define CONST_H
+#pragma once
 
 #define TARGET_FPS 60
 
@@ -26,4 +25,3 @@
 
 #define NULL_POINTER ( (void *) 0)
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef LEVEL_H
-#define LEVEL_H
+#pragma once
 
 #include <riv.h>
 #include "const.h"
@@ -32,4 +31,3 @@ enum tiles
     ENEMY_FAST = 5,
 };
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef BULLET_POOL_H
-#define BULLET_POOL_H
+#pragma once
 
 #include <riv.h>
 #include "bullet.h"
@@ -16,4 +15,3 @@ void update_bulletPool(BulletPool* bp, Level* l, Score* s);
 void draw_bulletPool(BulletPool* bp);
 Bullet* get_bullet(BulletPool* bp);
 
-#endif

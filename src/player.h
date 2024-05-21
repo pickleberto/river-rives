@@ -1,5 +1,4 @@
-#ifndef PLAYER_H
-#define PLAYER_H
+#pragma once
 
 #include <riv.h>
 #include "level.h"
@@ -23,4 +22,3 @@ void draw_player(Player* p);
 
 void kill_player(Player* p);
 
-#endif

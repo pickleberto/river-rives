@@ -1,5 +1,4 @@
-#ifndef FULL_MAP_H
-#define FULL_MAP_H
+#pragma once
 
 #include "const.h"
 
@@ -215,4 +214,3 @@ int full_level_map[FULL_TILES_Y][SCREEN_TILES_X] =
 };
 /**/
 
-#endif

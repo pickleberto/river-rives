@@ -1,5 +1,4 @@
-#ifndef SCORE_H
-#define SCORE_H
+#pragma once
 
 #include <riv.h>
 

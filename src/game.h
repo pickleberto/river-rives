@@ -1,5 +1,4 @@
-#ifndef GAME_H
-#define GAME_H
+#pragma once
 
 #include <riv.h>
 #include "player.h"
@@ -18,4 +17,3 @@ void init_game(Game* g, Player* p, Level* l);
 void update_game(Game* g);
 void draw_game(Game* g);
 
-#endif

@@ -1,5 +1,4 @@
-#ifndef BULLET_H
-#define BULLET_H
+#pragma once
 
 #include <riv.h>
 #include "level.h"
@@ -15,4 +14,3 @@ void init_bullet(Bullet* b, float screen_x, float screen_y);
 void update_bullet(Bullet* b, Level* l, Score* s);
 void draw_bullet(Bullet* b);
 
-#endif
