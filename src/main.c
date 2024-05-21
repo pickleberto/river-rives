@@ -36,7 +36,7 @@ void draw_title_screen()
 {
     // Draw title
     riv_draw_text(
-        "rives raid",             // text to draw
+        "river rives",            // text to draw
         RIV_SPRITESHEET_FONT_5X7, // sprite sheet id of the font
         RIV_CENTER,               // anchor point on the text bounding box
         CENTER_X,                 // anchor x
