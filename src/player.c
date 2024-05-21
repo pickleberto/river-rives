@@ -3,9 +3,6 @@
 #include "sounds.h"
 #include "bulletpool.h"
 
-#define SCALE_X 1
-#define SCALE_Y 1
-
 #define TILES_PER_SECOND ((float) TILE_SIZE/TARGET_FPS)
 #define BASE_SPEED (2.f * TILES_PER_SECOND)
 #define SHOOT_COOLDOWN_FRAMES (uint64_t) (0.25f * TARGET_FPS)
@@ -114,7 +111,7 @@ void draw_player(Player* p)
     }
     else
     {
-        riv_draw_sprite(p->sprite_id, GAME_SPRITESHEET, p->rect.x, p->rect.y, 1, 1, SCALE_X * p->flip_x, SCALE_Y);
+        riv_draw_sprite(p->sprite_id, GAME_SPRITESHEET, p->rect.x, p->rect.y, 1, 1, SPRITE_SCALE_X * p->flip_x, SPRITE_SCALE_Y);
     }
 
     draw_bulletPool(&bullets);

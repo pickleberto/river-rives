@@ -8,6 +8,8 @@ typedef struct enemy
     bool isActive;
     float speed;
     int enemy_type;
+    int sprite_id;
+    int flip_x;
 } Enemy;
 
 void init_enemy(Enemy* e, riv_vec2f pos, int enemy_type);

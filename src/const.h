@@ -16,4 +16,7 @@
 
 #define GAME_SPRITESHEET 1
 
+#define SPRITE_SCALE_X 1
+#define SPRITE_SCALE_Y 1
+
 #define NULL_POINTER ( (void *) 0)
