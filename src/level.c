@@ -1,6 +1,9 @@
 #include "level.h"
 
 #include "fullmap.h"
+#include "enemypool.h"
+
+EnemyPool enemies;
 
 void init_level(Level* l)
 {
@@ -9,11 +12,40 @@ void init_level(Level* l)
     
     l->min_y = (FULL_TILES_Y - SCREEN_TILES_Y) - 1;
     l->max_y = FULL_TILES_Y;
+
+    init_enemyPool(&enemies);
+}
+
+void add_enemies(Level* l)
+{
+    for(int i = 0; i < SCREEN_TILES_X; i++)
+    {
+        for(int j = l->min_y; j < l->max_y; j++)
+        {
+            if(full_level_map[j][i] >= ENEMY_SLOW)
+            {
+                Enemy* e = get_enemy(&enemies);
+
+                if(e != NULL_POINTER)
+                {
+                    int enemy_x = i * TILE_SIZE;
+                    int enemy_y = (j - l->min_y) * TILE_SIZE + l->map_offset;
+                    init_enemy(e, (riv_vec2f) {.x = enemy_x, .y = enemy_y,}, full_level_map[j][i] - ENEMY_SLOW);
+                    full_level_map[j][i] = RIVER;
+                }
+            }
+        }
+    }
 }
 
 void update_level(Level* l)
 {
-    if(l->min_y <= 0) return; // lock map on final screen
+    
+    if(l->min_y <= 0) // lock map on final screen
+    {
+        update_enemyPool(&enemies, 0);
+        return;
+    }
 
     if(l->map_offset + l->screen_speed >= TILE_SIZE)
     {
@@ -26,11 +58,15 @@ void update_level(Level* l)
             l->min_y = 0;
             l->max_y = SCREEN_TILES_Y + 1;
         }
+
+        add_enemies(l);
     }
     else
     {
         l->map_offset = (l->map_offset + l->screen_speed);
     }
+
+    update_enemyPool(&enemies, l->screen_speed);
 }
 
 void draw_tile(int tile_x, int tile_y, int tile, float offset)
@@ -68,6 +104,8 @@ void draw_level(Level* l)
             draw_tile(i, j - l->min_y, full_level_map[j][i], l->map_offset);
         }
     }
+
+    draw_enemyPool(&enemies);
 }
 
 bool screen_tile_collision(float x, float y, Level l, Score* s)
@@ -78,8 +116,9 @@ bool screen_tile_collision(float x, float y, Level l, Score* s)
     // remember full_level_map is inverted
     if(full_level_map[tile_y][tile_x] >= OBSTACLE)
     {
+        if(full_level_map[tile_y][tile_x] == OBSTACLE) add_obstacle_score(s);
+
         full_level_map[tile_y][tile_x] = RIVER; //if destructable, then destroy it
-        add_obstacle(s);
         return true;
     }
 
@@ -104,8 +143,9 @@ bool screen_player_tile_collision(float x, float y, Level l, Score* s)
     // remember full_level_map is inverted
     if(full_level_map[tile_y][tile_x] >= OBSTACLE && full_level_map[tile_y][tile_x] != FUEL)
     {
+        if(full_level_map[tile_y][tile_x] == OBSTACLE) add_obstacle_score(s);
+
         full_level_map[tile_y][tile_x] = RIVER; //if destructable, then destroy it
-        add_obstacle(s);
         return true;
     }
 
@@ -125,4 +165,12 @@ bool player_tile_collision(riv_rectf object, Level l, Score* s)
     bool edge4 = screen_player_tile_collision(object.x + object.width,    object.y + object.height,   l,   s);
     
     return edge1 || edge2 || edge3 || edge4;
+}
+
+bool enemies_collision(riv_rectf object, Score* s)
+{
+    if(collison_enemyPool(&enemies, object))
+    {
+        add_enemy_score(s);
+    }    
 }

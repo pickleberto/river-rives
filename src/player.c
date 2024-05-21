@@ -3,9 +3,6 @@
 #include "sounds.h"
 #include "bulletpool.h"
 
-#define SCALE_X 1
-#define SCALE_Y 1
-
 #define TILES_PER_SECOND ((float) TILE_SIZE/TARGET_FPS)
 #define BASE_SPEED (2.f * TILES_PER_SECOND)
 #define SHOOT_COOLDOWN_FRAMES (uint64_t) (0.25f * TARGET_FPS)
@@ -50,6 +47,11 @@ void update_vertical(Player* p, Level* l)
     {
         p->rect.y -= l->screen_speed;
     }
+
+    if(!p->score->completed && p->rect.y <= 0)
+    {
+        add_completion_bonus(p->score);
+    }
 }
 
 void update_horizontal(Player* p)
@@ -93,25 +95,22 @@ void update_fire(Player* p, Level* l)
 
 void update_player(Player* p, Level* l)
 {
-    if(p->isDead) return;
-    
-    update_horizontal(p);
-    update_fire(p, l);
-    update_vertical(p, l);
-    update_score(p->score);   
+    if(p->isDead)
+    {
+        p->sprite_id = EXPLOSION_SPRITE_ID  + (riv->frame / ANIM_RATE) % ANIM_SPRITES;
+    }
+    else
+    {
+        update_horizontal(p);
+        update_fire(p, l);
+        update_vertical(p, l);
+        update_score(p->score);
+    }
 }
 
 void draw_player(Player* p)
 {
-    if(p->isDead)
-    {
-        riv_draw_rect_fill(p->rect.x, p->rect.y, TILE_SIZE, TILE_SIZE, RIV_COLOR_RED);
-    }
-    else
-    {
-        riv_draw_sprite(p->sprite_id, GAME_SPRITESHEET, p->rect.x, p->rect.y, 1, 1, SCALE_X * p->flip_x, SCALE_Y);
-    }
-
+    riv_draw_sprite(p->sprite_id, GAME_SPRITESHEET, p->rect.x, p->rect.y, 1, 1, SPRITE_SCALE_X * p->flip_x, SPRITE_SCALE_Y);
     draw_bulletPool(&bullets);
     draw_score(p->score);
 }

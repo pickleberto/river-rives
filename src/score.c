@@ -7,21 +7,37 @@
 #define FUEL_WIDTH (2 * TILE_SIZE)
 #define FUEL_HEIGHT (HALF_TILE)
 
+#define OBSTACLE_PTS 100
+#define ENEMY_PTS 250
+#define COMPLETION_PTS (ENEMY_PTS * 10)
+#define TICK_FACTOR 10
+
 void init_score(Score* s)
 {
     s->score = 0;
     s->ticks = 0;
     s->obstacles_destroyed = 0;
     s->fuel = MAX_FUEL;
+    s->completed = false;
+    s->enemies = 0;
 }
 
 void update_score(Score* s) 
 {
     s->ticks++;
     s->fuel--;
-    s->score = (s->obstacles_destroyed * 100) + s->fuel - (s->ticks / 10);
-    riv->outcard_len = riv_snprintf((char*)riv->outcard, RIV_SIZE_OUTCARD, 
-        "JSON{\"score\":%d,\"obstacles\":%d,\"ticks\":%d}", s->score, s->obstacles_destroyed, s->ticks);
+    
+    int bonus = s->completed ? COMPLETION_PTS : 0;
+    
+    s->score = (s->obstacles_destroyed * OBSTACLE_PTS) 
+        + s->fuel 
+        + (s->enemies * ENEMY_PTS) 
+        - (s->ticks / TICK_FACTOR) 
+        + bonus;
+    
+    riv->outcard_len = riv_snprintf((char*)riv->outcard, RIV_SIZE_OUTCARD
+        , "JSON{\"score\":%d,\"obstacles\":%d,\"ticks\":%d,\"completed\":%d}"
+        , s->score, s->obstacles_destroyed, s->ticks, s->completed);
 }
 
 void draw_score(Score* s)
@@ -44,7 +60,7 @@ void draw_score(Score* s)
     riv_draw_text(s->fuel > 0 ? "FUEL":"OUT OF GAS", RIV_SPRITESHEET_FONT_3X5, RIV_BOTTOM, fuel_x + FUEL_WIDTH / 2, fuel_y - 1, text_size, RIV_COLOR_WHITE);
 }
 
-void add_obstacle(Score* s)
+void add_obstacle_score(Score* s)
 {
     s->obstacles_destroyed++;
 }
@@ -60,4 +76,14 @@ void add_fuel(Score* s)
     {
         sfx_fuel();
     }
+}
+
+void add_completion_bonus(Score* s)
+{
+    s->completed = true;
+}
+
+void add_enemy_score(Score* s)
+{
+    s->enemies++;
 }

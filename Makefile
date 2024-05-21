@@ -1,4 +1,4 @@
-game_name = rives-raid
+game_name = river-rives
 cartridge = $(game_name).sqfs
 rivemuexec = rivemu -quiet -no-window -sdk -workspace -exec
 entry = 0-entry.sh
