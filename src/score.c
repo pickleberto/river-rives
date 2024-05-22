@@ -24,10 +24,13 @@ void init_score(Score* s)
 
 void update_score(Score* s) 
 {
-    s->ticks++;
-    s->fuel--;
-    
-    int bonus = s->completed ? COMPLETION_PTS : 0;
+    int bonus = COMPLETION_PTS;
+    if(!s->completed)
+    {
+        bonus = 0;
+        s->ticks++;
+        s->fuel--;
+    }
     
     s->score = (s->obstacles_destroyed * OBSTACLE_PTS) 
         + s->fuel 
