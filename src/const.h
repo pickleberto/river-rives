@@ -24,3 +24,5 @@
 #define SPRITE_SCALE_Y 1
 
 #define NULL_POINTER ( (void *) 0)
+
+#define N_ELEMS(x)  (sizeof(x) / sizeof((x)[0]))
