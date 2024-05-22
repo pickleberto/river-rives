@@ -1,29 +1,7 @@
 #include <riv.h>
 
-typedef struct enemy
-{
-    riv_rectf rect;
-    bool isActive;
-    float speed;
-    int enemy_type;
-    int sprite_id;
-    int flip_x;
-    bool isDead;
-    int deathFrame;
-} Enemy;
 
-void init_enemy(Enemy* e, riv_vec2f pos, int enemy_type);
-void update_enemy(Enemy* e, float map_speed);
-void draw_enemy(Enemy* e);
-void kill_enemy(Enemy* e);
 
-enum enemyType
-{
-    SLOW_TYPE = 0,
-    FAST_TYPE = 1, 
-};
-#ifndef SCORE_H
-#define SCORE_H
 
 typedef struct score
 {
@@ -43,10 +21,10 @@ void add_fuel(Score* s);
 void add_completion_bonus(Score* s);
 void add_enemy_score(Score* s);
 
-#endif
 
-#ifndef LEVEL_H
-#define LEVEL_H
+
+
+
 
 #define BASE_MAP_SPEED 1
 
@@ -75,7 +53,34 @@ enum tiles
     ENEMY_FAST = 5,
 };
 
-#endif
+
+
+
+
+typedef struct enemy
+{
+    riv_rectf rect;
+    bool isActive;
+    float speed;
+    int enemy_type;
+    int sprite_id;
+    int flip_x;
+    bool isDead;
+    int deathFrame;
+} Enemy;
+
+void init_enemy(Enemy* e, riv_vec2f pos, int enemy_type);
+void update_enemy(Enemy* e, float map_speed);
+void draw_enemy(Enemy* e);
+void kill_enemy(Enemy* e);
+
+enum enemyType
+{
+    SLOW_TYPE = 0,
+    FAST_TYPE = 1, 
+};
+
+
 
 
 #define ENEMY_POOL_SIZE 10
@@ -90,8 +95,10 @@ void update_enemyPool(EnemyPool* ep, float map_speed);
 void draw_enemyPool(EnemyPool* ep);
 Enemy* get_enemy(EnemyPool* ep);
 bool collison_enemyPool(EnemyPool* ep, riv_rectf object);
-#ifndef BULLET_H
-#define BULLET_H
+
+
+
+
 
 typedef struct bullet
 {
@@ -103,11 +110,7 @@ void init_bullet(Bullet* b, float screen_x, float screen_y);
 void update_bullet(Bullet* b, Level* l, Score* s);
 void draw_bullet(Bullet* b);
 
-#endif
 
-
-#ifndef BULLET_POOL_H
-#define BULLET_POOL_H
 
 
 
@@ -124,9 +127,7 @@ void update_bulletPool(BulletPool* bp, Level* l, Score* s);
 void draw_bulletPool(BulletPool* bp);
 Bullet* get_bullet(BulletPool* bp);
 
-#endif
-#ifndef PLAYER_H
-#define PLAYER_H
+
 
 
 
@@ -150,9 +151,7 @@ void draw_player(Player* p);
 
 void kill_player(Player* p);
 
-#endif
-#ifndef SOUNDS_H
-#define SOUNDS_H
+
 
 
 
@@ -162,10 +161,7 @@ void sfx_shoot();
 void sfx_fuel();
 void sfx_max_fuel();
 
-#endif
 
-#ifndef CONST_H
-#define CONST_H
 
 #define TARGET_FPS 60
 
@@ -191,10 +187,8 @@ void sfx_max_fuel();
 #define SPRITE_SCALE_Y 1
 
 #define NULL_POINTER ( (void *) 0)
-#endif
 
-#ifndef GAME_H
-#define GAME_H
+
 
 
 
@@ -213,9 +207,7 @@ void init_game(Game* g, Player* p, Level* l);
 void update_game(Game* g);
 void draw_game(Game* g);
 
-#endif
-#ifndef FULL_MAP_H
-#define FULL_MAP_H
+
 
 
 
@@ -431,4 +423,3 @@ int full_level_map[FULL_TILES_Y][SCREEN_TILES_X] =
 };
 /**/
 
-#endif
