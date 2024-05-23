@@ -1,5 +1,6 @@
 #include "game.h"
 #include "const.h"
+#include "music.h"
 
 Score s;
 
@@ -19,8 +20,21 @@ void update_game(Game* g)
     update_level(g->level);
     update_player(g->player, g->level);
 
-    if(g->game_over) return;
+    if(g->game_over) 
+    {
+        if(g->player->isDead)
+        {
+            play_game_over();
+        }
+        else
+        {
+            play_completion();
+        }
+        return;
+    }
     
+    play_music();
+
     if(player_tile_collision(g->player->rect, *g->level, g->player->score) 
         || enemies_collision(g->player->rect, g->player->score)
         || (g->player->score->fuel <= 0))

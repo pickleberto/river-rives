@@ -4,7 +4,6 @@
 #include "const.h"
 
 #define WAVEFORM_FRAMES (uint64_t)(.5f * TARGET_FPS)
-#define MUSIC_SPEED 8
 
 riv_waveform_desc explosion = {
     .type = RIV_WAVEFORM_NOISE,
@@ -41,14 +40,6 @@ riv_waveform_desc max_fuel = {
     .amplitude = .5f, .sustain_level = 0.3f, .duty_cycle = 0.5f, .pan = 0,
 };
 
-riv_note_freq  rhythm_notes[] = {
-  RIV_NOTE_A4, RIV_NOTE_C5, RIV_NOTE_E5, RIV_NOTE_G5, RIV_NOTE_A4, RIV_NOTE_C5, RIV_NOTE_E5, RIV_NOTE_G5, RIV_NOTE_A4, RIV_NOTE_C5, RIV_NOTE_E5, RIV_NOTE_G5, RIV_NOTE_A4, RIV_NOTE_C5, RIV_NOTE_E5, RIV_NOTE_G5,
-  RIV_NOTE_C5, RIV_NOTE_E5, RIV_NOTE_G5, RIV_NOTE_A5, RIV_NOTE_C5, RIV_NOTE_E5, RIV_NOTE_G5, RIV_NOTE_A5, RIV_NOTE_C5, RIV_NOTE_E5, RIV_NOTE_G5, RIV_NOTE_A5, RIV_NOTE_C5, RIV_NOTE_E5, RIV_NOTE_G5, RIV_NOTE_A5,
-  RIV_NOTE_D5, RIV_NOTE_E5, RIV_NOTE_G5, RIV_NOTE_A5, RIV_NOTE_D5, RIV_NOTE_E5, RIV_NOTE_G5, RIV_NOTE_A5, RIV_NOTE_D5, RIV_NOTE_E5, RIV_NOTE_G5, RIV_NOTE_A5, RIV_NOTE_D5, RIV_NOTE_E5, RIV_NOTE_G5, RIV_NOTE_A5,
-  RIV_NOTE_G4, RIV_NOTE_A4, RIV_NOTE_B4, RIV_NOTE_E5, RIV_NOTE_G4, RIV_NOTE_A4, RIV_NOTE_B4, RIV_NOTE_E5, RIV_NOTE_G4, RIV_NOTE_A4, RIV_NOTE_B4, RIV_NOTE_E5, RIV_NOTE_G4, RIV_NOTE_A4, RIV_NOTE_B4, RIV_NOTE_E5,
-};
-
-
 void sfx_explosion()
 {
     riv_waveform(&explosion);
@@ -82,44 +73,4 @@ void sfx_max_fuel()
         riv_waveform(&max_fuel);
         last_frame_max_fuel = riv->frame;
     }
-}
-
-uint64_t next_frame = 0ULL;
-int notes_index = 0;
-bool play_music_notes(riv_note_freq notes[], int index)
-{
-    if(riv->frame >= next_frame)
-    {
-        next_frame = riv->frame + MUSIC_SPEED;
-
-        riv_waveform_desc current_note = {
-            .type = RIV_WAVEFORM_PULSE,
-            .attack = 1, .release = 1, .sustain_level = MUSIC_SPEED-2,
-            .duty_cycle = 0.75, .amplitude = 0.01f, 
-            .start_frequency = notes[index], 
-        };
-    
-        riv_waveform(&current_note);
-        return true;
-        // riv_printf("note %d, index: %d\n", rhythm_notes[notes_index], notes_index);
-    }
-    return false;
-}
-
-void play_music()
-{
-    if(play_music_notes(rhythm_notes, notes_index))
-    {
-        notes_index = (notes_index + 1) % N_ELEMS(rhythm_notes);
-    }
-}
-
-void play_completion()
-{
-
-}
-
-void play_game_over()
-{
-
 }

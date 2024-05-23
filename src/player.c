@@ -98,7 +98,7 @@ void update_player(Player* p, Level* l)
     if(p->isDead)
     {
         p->sprite_id = EXPLOSION_SPRITE_ID  + (riv->frame / ANIM_RATE) % ANIM_SPRITES;
-        play_game_over();
+        // play_game_over();
     }
     else
     {
@@ -109,11 +109,12 @@ void update_player(Player* p, Level* l)
 
         if(p->score->completed)
         {
-            play_completion();
+            // play_completion();
         }
         else
         {
-            play_music();
+            // play_game_over();
+            // play_music();
         }
     }
 }
