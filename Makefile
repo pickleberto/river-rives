@@ -1,5 +1,7 @@
 game_name = river-rives
+game = $(game_name).elf
 cartridge = $(game_name).sqfs
+cartridge_sdk = $(game_name)-sdk.sqfs
 rivemuexec = rivemu -quiet -no-window -sdk -workspace -exec
 entry = 0-entry.sh
 info_json = info.json
@@ -9,6 +11,9 @@ HEADERS = $(wildcard src/*.h)
 big_main = sf/main.c
 big_header = sf/headers.h
 SF_DIR = sf
+
+OBJDIR := objs
+OBJS := $(patsubst src/%.c,$(OBJDIR)/%.o,$(wildcard src/*.c))
 
 play: $(cartridge)
 	rivemu $(cartridge)
@@ -55,3 +60,25 @@ web:
 	sed -i 's/\#include <riv.h>//g' sf/main.c
 	sed  -i '1i \#include <riv.h>' sf/headers.h
 	sed  -i '1i \#include \"headers.h\"' sf/main.c
+
+sdk: $(cartridge_sdk)
+	rivemu -sdk $(cartridge_sdk)
+
+$(game): $(OBJS)
+	$(rivemuexec) 'gcc -o $(game) $(OBJS) $$(riv-opt-flags -Ospeed)'
+	$(rivemuexec) riv-strip $(game)
+
+$(cartridge_sdk): $(game) $(SPRITES)
+	$(rivemuexec) riv-mksqfs $(game) $(SPRITES) $(cartridge_sdk) -comp xz
+
+$(OBJDIR)/%.o : src/%.c
+	$(rivemuexec) 'gcc $< -o $@ -c'
+
+$(OBJS): | $(OBJDIR)
+
+$(OBJDIR):
+	mkdir $(OBJDIR)
+
+clean-sdk:
+	rm -r $(OBJDIR)
+	rm $(cartridge_sdk) $(game)
