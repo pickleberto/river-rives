@@ -6,6 +6,7 @@
 #define ENEMY_SLOW_BASE_SPRITE_ID 2
 #define ENEMY_FAST_BASE_SPRITE_ID 4
 #define DEATH_ANIM_TIME (1 * TARGET_FPS)
+#define START_DELAY_FRAMES (1.5f * TARGET_FPS)
 
 void init_enemy(Enemy* e, riv_vec2f pos, int enemy_type)
 {
@@ -19,6 +20,7 @@ void init_enemy(Enemy* e, riv_vec2f pos, int enemy_type)
     e->enemy_type = enemy_type;
     e->flip_x = -1;
     e->sprite_id = ENEMY_SLOW_BASE_SPRITE_ID;
+    e->start_frame = riv->frame;
 
     if(pos.x > SCREEN_WIDTH/2)
     {
@@ -49,8 +51,12 @@ void update_enemy(Enemy* e, float map_speed)
     }
     else
     {
+        if(e->enemy_type == FAST_TYPE || riv->frame > (uint64_t)(e->start_frame + START_DELAY_FRAMES))
+        {
+            e->rect.x += e->speed;
+        }
+
         e->rect.y += map_speed;
-        e->rect.x += e->speed;
         int base_id = e->enemy_type == FAST_TYPE ? ENEMY_FAST_BASE_SPRITE_ID : ENEMY_SLOW_BASE_SPRITE_ID;
         e->sprite_id = base_id + (riv->frame / ANIM_RATE) % ANIM_SPRITES;
 

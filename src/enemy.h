@@ -12,6 +12,7 @@ typedef struct enemy
     int flip_x;
     bool isDead;
     int deathFrame;
+    int start_frame;
 } Enemy;
 
 void init_enemy(Enemy* e, riv_vec2f pos, int enemy_type);
