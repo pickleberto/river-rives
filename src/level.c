@@ -172,5 +172,7 @@ bool enemies_collision(riv_rectf object, Score* s)
     if(collison_enemyPool(&enemies, object))
     {
         add_enemy_score(s);
-    }    
+        return true;
+    }
+    return false;
 }
