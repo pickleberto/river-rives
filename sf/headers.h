@@ -162,7 +162,6 @@ void sfx_fuel();
 void sfx_max_fuel();
 
 
-
 #define TARGET_FPS 60
 
 #define SCREEN_WIDTH 256
@@ -188,7 +187,14 @@ void sfx_max_fuel();
 
 #define NULL_POINTER ( (void *) 0)
 
+#define N_ELEMS(x)  (sizeof(x) / sizeof((x)[0]))
 
+
+
+
+void play_music();
+void play_completion();
+void play_game_over();
 
 
 

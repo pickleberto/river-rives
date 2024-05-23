@@ -2,6 +2,7 @@ game_name = river-rives
 cartridge = $(game_name).sqfs
 rivemuexec = rivemu -quiet -no-window -sdk -workspace -exec
 entry = 0-entry.sh
+info_json = info.json
 SPRITES := $(wildcard sprites/*.png)
 SOURCES = $(wildcard src/*.c)
 HEADERS = $(wildcard src/*.h)
@@ -13,7 +14,7 @@ play: $(cartridge)
 	rivemu $(cartridge)
 
 $(cartridge): $(big_main) $(big_header) $(SPRITES) |$(entry)
-	$(rivemuexec) riv-mksqfs $(big_main) $(big_header) $(SPRITES) $(entry) $(cartridge) -comp xz
+	$(rivemuexec) riv-mksqfs $(big_main) $(big_header) $(info_json) $(SPRITES) $(entry) $(cartridge) -comp xz
 
 $(entry):
 	echo "riv-jit-c main.c" > $(entry)
