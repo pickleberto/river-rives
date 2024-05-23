@@ -178,9 +178,23 @@ void update_enemy(Enemy* e, float map_speed)
         int base_id = e->enemy_type == FAST_TYPE ? ENEMY_FAST_BASE_SPRITE_ID : ENEMY_SLOW_BASE_SPRITE_ID;
         e->sprite_id = base_id + (riv->frame / ANIM_RATE) % ANIM_SPRITES;
 
-        if(e->rect.y > SCREEN_HEIGHT || e->rect.x > SCREEN_WIDTH || e->rect.x < 0)
+        if(e->rect.y > SCREEN_HEIGHT)
         {
             e->isActive = false;
+        }
+        
+        if(e->enemy_type == SLOW_TYPE && (e->rect.x > SCREEN_WIDTH || e->rect.x < 0))
+        {
+            e->isActive = false;
+        }
+
+        if(e->enemy_type == FAST_TYPE)
+        {
+            if(e->rect.x > SCREEN_WIDTH) {
+                e->rect.x = 0;
+            } else if(e->rect.x < 0) {
+                e->rect.x = SCREEN_WIDTH;
+            }
         }
     }
 }
@@ -472,6 +486,7 @@ void update_player(Player* p, Level* l)
     if(p->isDead)
     {
         p->sprite_id = EXPLOSION_SPRITE_ID  + (riv->frame / ANIM_RATE) % ANIM_SPRITES;
+        // play_game_over();
     }
     else
     {
@@ -479,6 +494,16 @@ void update_player(Player* p, Level* l)
         update_fire(p, l);
         update_vertical(p, l);
         update_score(p->score);
+
+        if(p->score->completed)
+        {
+            // play_completion();
+        }
+        else
+        {
+            // play_game_over();
+            // play_music();
+        }
     }
 }
 

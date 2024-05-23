@@ -71,6 +71,15 @@ void draw_game(Game* g)
     
     if(g->game_over)
     {
-        riv_draw_text("game over", RIV_SPRITESHEET_FONT_5X7, RIV_CENTER, CENTER_X, CENTER_Y, 2, RIV_COLOR_RED);
+        if(g->player->isDead)
+        {
+            riv_draw_text("game over", RIV_SPRITESHEET_FONT_5X7, RIV_CENTER, CENTER_X, CENTER_Y, 2, RIV_COLOR_RED);
+        }
+        else
+        {
+            int blink = TARGET_FPS / 5;
+            uint32_t color = (riv->frame % blink < (blink/2)) ? RIV_COLOR_GOLD : RIV_COLOR_YELLOW;
+            riv_draw_text("YOU WIN", RIV_SPRITESHEET_FONT_5X7, RIV_CENTER, CENTER_X, CENTER_Y, 2, color);
+        }
     }
 }
