@@ -91,7 +91,15 @@ void draw_tile(int tile_x, int tile_y, int tile, float offset)
         color = RIV_COLOR_DARKSLATE;
         break;
     }
-    riv_draw_rect_fill(tile_x * TILE_SIZE, (tile_y * TILE_SIZE) + offset - TILE_SIZE, TILE_SIZE, TILE_SIZE, color);
+    
+    float tx = tile_x * TILE_SIZE;
+    float ty = (tile_y * TILE_SIZE) + offset - TILE_SIZE;
+    riv_draw_rect_fill(tx, ty, TILE_SIZE, TILE_SIZE, color);
+    
+    if(tile == FUEL)
+    {
+        riv_draw_text("Fuel", RIV_SPRITESHEET_FONT_3X5, RIV_LEFT, tx, ty + (TILE_SIZE/2), 1, RIV_COLOR_WHITE);
+    }
 }
 
 void draw_level(Level* l)
