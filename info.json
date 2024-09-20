@@ -1,7 +1,7 @@
 {
     "name": "River Rives",
     "summary": "Made for the rives jam 1, ​a homage to the old River Raid game.",
-    "description": "​River Raid​ is a classic game made for the atari 2600.\nThis is a smaller version made in C to run in RIVES​ for the RISC-V retro Jam #1​.\n\nControls:\n- Directionals left and right to move horizontally;\n- Up to speed up;\n-Down to slow down;\n-Z key or gamepad button A1 to fire;\n\nThe game sources are available at its GitHub repository.",
+    "description": "​River Raid​ is a classic game made for the atari 2600.\nThis is a smaller version made in C to run in RIVES​ for the RISC-V retro Jam #1​.\n\nControls:\n- Directionals left and right to move horizontally;\n- Up to speed up;\n- Down to slow down;\n- Z key or gamepad button A1 to fire;\n\nThe game sources are available at its GitHub repository.",
     "tags": [
       "action",
       "2d",
@@ -15,5 +15,9 @@
         "link": "https://github.com/pickleberto"
       }
     ],
-    "url": "https://github.com/pickleberto/rives-raid"
+    "links": [
+        "https://github.com/pickleberto/river-rives",
+        "https://pickleberto.itch.io/river-rives"
+    ],
+    "url": "https://github.com/pickleberto/river-rives"
   }
