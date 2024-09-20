@@ -55,3 +55,6 @@ dkms.conf
 *.elf
 *.sqfs
 0-entry.sh
+
+# auto generated sources
+sf/
